@@ -39,7 +39,8 @@ jobs:
 
       # Step 4: Lint with Ruff
       - name: Lint with Ruff
-        run: poetry run ruff .
+        run: poetry run ruff check .
+
 
       # Step 5: Run tests
       - name: Run tests
