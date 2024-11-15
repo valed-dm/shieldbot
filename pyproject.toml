@@ -34,6 +34,10 @@ yarl = "1.17.1"
 pytest = "^8.3.3"
 faker = "^33.0.0"
 
+
+[tool.poetry.group.dev.dependencies]
+ruff = "^0.7.4"
+
 [build-system]
 requires = ["poetry-core"]
 build-backend = "poetry.core.masonry.api"
