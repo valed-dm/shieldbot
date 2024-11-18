@@ -3,34 +3,30 @@ import os
 
 from aiogram import Bot
 from aiogram import Dispatcher
-from aiogram.filters import Command
 from dotenv import load_dotenv
 
-from bot.handlers import message_handler
-from bot.handlers.menu import help_callback
-from bot.handlers.menu import menu_command
-from bot.handlers.menu import start_conversation_callback
+from bot.handlers.callbacks import register_callbacks
+from bot.handlers.messages import register_messages
 
-# Load environment variables
 load_dotenv()
 API_TOKEN = os.getenv("BOT_TOKEN")
+if API_TOKEN is None:
+    msg = "BOT_TOKEN not found! Check your .env file."
+    raise ValueError(msg)
 
-bot = Bot(token=API_TOKEN)
-dp = Dispatcher()
-
-logging.basicConfig(level=logging.INFO)
-
-# Register handlers
-dp.message.register(menu_command, Command("start"))
-dp.message.register(message_handler.handle_message)
-dp.callback_query.register(
-    start_conversation_callback,
-    lambda c: c.data == "start_conversation",
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
-dp.callback_query.register(help_callback, lambda c: c.data == "help")
 
 
 async def main():
+    bot = Bot(token=API_TOKEN)
+    dp = Dispatcher()
+
+    register_messages(dp)
+    register_callbacks(dp)
+
     await dp.start_polling(bot)
 
 
