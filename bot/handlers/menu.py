@@ -18,7 +18,7 @@ async def menu_command(message: types.Message):
     keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
 
     await message.answer(
-        "Welcome to ShieldBot! Choose an option:",
+        "Welcome to 'SecureTalk' bot! Choose an option:",
         reply_markup=keyboard,
     )
 
@@ -26,15 +26,15 @@ async def menu_command(message: types.Message):
 async def start_conversation_callback(callback_query: types.CallbackQuery):
     """Handles the start conversation button."""
     await callback_query.message.answer("Starting a secure conversation... 🔐")
-    await callback_query.answer()  # Acknowledge the callback
+    await callback_query.answer()
 
 
 async def help_callback(callback_query: types.CallbackQuery):
     """Handles the help button."""
     help_text = (
-        "ShieldBot allows you to securely communicate using encryption.\n"
+        "'SecureTalk' bot allows you to securely communicate using encryption.\n"
         "Use 'Start Conversation' to begin a secure chat.\n"
         "For further assistance, contact support."
     )
     await callback_query.message.answer(help_text)
-    await callback_query.answer()  # Acknowledge the callback
+    await callback_query.answer()
