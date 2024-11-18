@@ -3,38 +3,24 @@ from aiogram.types import InlineKeyboardButton
 from aiogram.types import InlineKeyboardMarkup
 
 
-async def menu_command(message: types.Message):
-    """Display the main menu with inline keyboard buttons."""
-    # Define buttons
+def dynamic_menu_keyboard(buttons_per_row: int):
     buttons = [
-        [
-            InlineKeyboardButton(
-                text="Start Conversation",
-                callback_data="start_conversation",
-            ),
-        ],
-        [InlineKeyboardButton(text="Help", callback_data="help")],
+        InlineKeyboardButton(text="Help", callback_data="help"),
+        InlineKeyboardButton(text="Generate Keypair", callback_data="generate_keypair"),
+        InlineKeyboardButton(text="Start SecureTalk", callback_data="start_securetalk"),
+        InlineKeyboardButton(text="Settings", callback_data="settings"),
     ]
-    keyboard = InlineKeyboardMarkup(inline_keyboard=buttons)
 
+    rows = [
+        buttons[i : i + buttons_per_row]
+        for i in range(0, len(buttons), buttons_per_row)
+    ]
+
+    return InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+async def start_command(message: types.Message):
     await message.answer(
-        "Welcome to 'SecureTalk' bot! Choose an option:",
-        reply_markup=keyboard,
+        "Welcome to SecureTalk! Choose an action below:",
+        reply_markup=dynamic_menu_keyboard(3),
     )
-
-
-async def start_conversation_callback(callback_query: types.CallbackQuery):
-    """Handles the start conversation button."""
-    await callback_query.message.answer("Starting a secure conversation... 🔐")
-    await callback_query.answer()
-
-
-async def help_callback(callback_query: types.CallbackQuery):
-    """Handles the help button."""
-    help_text = (
-        "'SecureTalk' bot allows you to securely communicate using encryption.\n"
-        "Use 'Start Conversation' to begin a secure chat.\n"
-        "For further assistance, contact support."
-    )
-    await callback_query.message.answer(help_text)
-    await callback_query.answer()
