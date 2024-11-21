@@ -1,18 +1,10 @@
 import logging
-import os
 
-from aiogram import Bot
 from aiogram import Dispatcher
-from dotenv import load_dotenv
 
-from bot.handlers.callbacks import register_callbacks
-from bot.handlers.messages import register_messages
-
-load_dotenv()
-API_TOKEN = os.getenv("BOT_TOKEN")
-if API_TOKEN is None:
-    msg = "BOT_TOKEN not found! Check your .env file."
-    raise ValueError(msg)
+from bot.callbacks.callbacks import register_callbacks
+from bot.core.bot_instance import bot
+from bot.messages.messages import register_messages
 
 logging.basicConfig(
     level=logging.INFO,
@@ -21,7 +13,7 @@ logging.basicConfig(
 
 
 async def main():
-    bot = Bot(token=API_TOKEN)
+    """SecureTalk Bot"""
     dp = Dispatcher()
 
     register_messages(dp)
