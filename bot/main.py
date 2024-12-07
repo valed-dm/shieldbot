@@ -1,25 +1,40 @@
 import logging
 
 from aiogram import Dispatcher
+from aiogram.fsm.storage.memory import MemoryStorage
 
-from bot.callbacks.callbacks import register_callbacks
+from bot.callbacks.callbacks import router as callbacks_router
 from bot.core.bot_instance import bot
-from bot.messages.messages import register_messages
+from bot.core.redis_client import redis_client
+from bot.messages.messages import router as messages_router
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 
+dp = Dispatcher(storage=MemoryStorage())
+
+logger = logging.getLogger("SecureTalkBot")
+
+
+async def on_shutdown():
+    """Shutdown tasks."""
+    await redis_client.aclose()
+    logger.info("Shutting down redis connection")
+    await bot.session.close()
+    logger.info("Bot session closed.")
+
 
 async def main():
-    """SecureTalk Bot"""
-    dp = Dispatcher()
+    """SecureTalk Bot entry point"""
+    dp.include_router(messages_router)
+    dp.include_router(callbacks_router)
 
-    register_messages(dp)
-    register_callbacks(dp)
-
-    await dp.start_polling(bot)
+    try:
+        await dp.start_polling(bot)
+    finally:
+        await on_shutdown()
 
 
 if __name__ == "__main__":
