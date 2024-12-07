@@ -5,7 +5,7 @@ from typing import TYPE_CHECKING
 from aiogram.exceptions import TelegramBadRequest
 
 from bot.core.bot_instance import bot
-from bot.messages.partner_deeplink import generate_deep_link
+from bot.messages.invitee_deeplink import invitee_deep_link
 from bot.messages.partner_messages import invalid_format
 from bot.messages.partner_messages import invitation_link_created
 from bot.messages.partner_messages import unexpected_err_msg
@@ -27,7 +27,7 @@ async def resolve_invitee_id(message: Message, username: str):
 
     except TelegramBadRequest as e:
         if "chat not found" in str(e):
-            await generate_deep_link(message=message, partner=username)
+            await invitee_deep_link(message=message, invitee=username)
             return {
                 "success": "link_ready",
                 "message": invitation_link_created(username),
