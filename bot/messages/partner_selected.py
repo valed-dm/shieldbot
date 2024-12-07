@@ -1,13 +1,37 @@
-from aiogram import types
+from __future__ import annotations
 
-from bot.utils.resolve_partner import resolve_partner_id
+import logging
+from typing import TYPE_CHECKING
+
+from bot.core.bot_instance import bot
+from bot.utils.resolve_invitee import resolve_invitee_id
+
+if TYPE_CHECKING:
+    from aiogram import types
+    from aiogram.fsm.context import FSMContext
 
 
-async def on_partner_selected(message: types.Message):
-    partner_id = await resolve_partner_id(
-        chat_id=message.chat.id,
-        input_text=message.text,
-    )
-    if not partner_id:
-        await message.reply("❌ User not found or not registered with the bot.")
-        return
+async def on_partner_selected(message: types.Message, state: FSMContext) -> None:
+    input_text = message.text.strip()
+
+    result = await resolve_invitee_id(message=message, username=input_text)
+
+    if result["success"] == "link_ready":
+        await bot.send_message(message.chat.id, result["message"])
+        await state.clear()
+
+        logging.info(result["message"].split("\n")[1])
+
+    elif result["success"]:
+        invitee_id = result["partner_id"]
+
+        await bot.send_message(invitee_id, "SecureTalk initiated!")
+        await state.clear()
+
+        success_msg = f"Invitee found: ID {invitee_id}."
+        logging.info(success_msg)
+
+    else:
+        await bot.send_message(message.chat.id, result["message"])
+
+        logging.error(result["message"])
