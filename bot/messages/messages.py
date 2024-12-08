@@ -1,15 +1,17 @@
-from aiogram import Dispatcher
+from aiogram import Router
 from aiogram.filters import Command
+from aiogram.filters import StateFilter
 
-from bot.commands.start import start_command_menu
+from bot.commands.start import start_command
+from bot.core.state import UsernameInputState
 from bot.messages.message_handler import handle_message
 from bot.messages.partner_selected import on_partner_selected
 
+router = Router(name=__name__)
 
-def register_messages(dp: Dispatcher):
-    dp.message.register(start_command_menu, Command("start"))
-    dp.message.register(
-        on_partner_selected,
-        lambda message: message.text.startswith("@") or message.text.isdigit(),
-    )
-    dp.message.register(handle_message)
+router.message.register(start_command, Command("start"))
+router.message.register(
+    on_partner_selected,
+    StateFilter(UsernameInputState.entering_username),
+)
+router.message.register(handle_message)
