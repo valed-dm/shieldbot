@@ -1,8 +1,12 @@
 from __future__ import annotations
 
+import json
+
 from aiogram.types import InlineKeyboardButton
 from aiogram.types import InlineKeyboardMarkup
 
+from bot.core.bot_instance import bot
+from bot.core.redis_client import redis_client
 from bot.utils.dynamic_keyboard import dynamic_keyboard
 
 
@@ -16,21 +20,19 @@ async def contacts_keyboard(user_id: int) -> InlineKeyboardMarkup:
     Returns:
         InlineKeyboardMarkup: A keyboard with contact options.
     """
-    # Fetch contacts for the current user (replace with real data)
-    contacts = await get_user_contacts(user_id)
+    contacts = await get_inviter_partners(inviter_id=user_id)
 
     contacts_menu_buttons = [
         InlineKeyboardButton(
             text=f"🔒 {contact['username']}",
-            callback_data=f"partner_{contact['id']}",
+            callback_data=f"partner_{contact['invitee_id']}",
         )
         for contact in contacts
     ]
 
-    # Add manual input option
     contacts_menu_buttons.append(
         InlineKeyboardButton(
-            text="🔍 Enter username manually",
+            text="🔍 Invite partner",
             callback_data="manual_partner_input",
         ),
     )
@@ -38,21 +40,21 @@ async def contacts_keyboard(user_id: int) -> InlineKeyboardMarkup:
     return dynamic_keyboard(contacts_menu_buttons, 3)
 
 
-async def get_user_contacts(user_id: int) -> list[dict]:
-    """
-    Mock function to get user contacts.
+async def get_inviter_partners(inviter_id: int):
+    secure_ids = await redis_client.smembers(f"inviter_conversations:{inviter_id}")
+    invitees = []
 
-    Args:
-        user_id (int): The Telegram user ID.
+    if not secure_ids:
+        await bot.send_message(
+            inviter_id,
+            "You do not have active secured contacts yet.!",
+        )
+    else:
+        for secure_id in secure_ids:
+            invitee_data_json = await redis_client.get(
+                f"conversation_invitee:{secure_id}",
+            )
+            if invitee_data_json:
+                invitees.append(json.loads(invitee_data_json))
 
-    Returns:
-        list[dict]: A list of contacts with IDs and usernames.
-    """
-    return [
-        {"id": 101, "username": "secure_buddy1"},
-        {"id": 202, "username": "secure_buddy2"},
-        {"id": 303, "username": "secure_buddy3"},
-        {"id": 404, "username": "secure_buddy4"},
-        {"id": 505, "username": "secure_buddy5"},
-        {"id": 606, "username": "secure_buddy6"},
-    ]
+    return invitees
