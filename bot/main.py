@@ -4,7 +4,7 @@ from aiogram import Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
 from bot.callbacks.callbacks import router as callbacks_router
-from bot.core.bot_instance import bot
+from bot.core.bot_instance import get_bot_instance
 from bot.core.redis_client import get_redis_client
 from bot.messages.messages import router as messages_router
 
@@ -13,6 +13,8 @@ logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
 )
 logger = logging.getLogger("SecureTalkBot")
+
+bot = get_bot_instance()
 redis_client = get_redis_client()
 
 dp = Dispatcher(storage=MemoryStorage())

@@ -3,12 +3,14 @@ from __future__ import annotations
 import logging
 from typing import TYPE_CHECKING
 
-from bot.core.bot_instance import bot
+from bot.core.bot_instance import get_bot_instance
 from bot.utils.resolve_invitee import resolve_invitee_id
 
 if TYPE_CHECKING:
     from aiogram import types
     from aiogram.fsm.context import FSMContext
+
+bot = get_bot_instance()
 
 
 async def on_partner_selected(message: types.Message, state: FSMContext) -> None:

@@ -5,10 +5,11 @@ import json
 from aiogram.types import InlineKeyboardButton
 from aiogram.types import InlineKeyboardMarkup
 
-from bot.core.bot_instance import bot
+from bot.core.bot_instance import get_bot_instance
 from bot.core.redis_client import get_redis_client
 from bot.utils.dynamic_keyboard import dynamic_keyboard
 
+bot = get_bot_instance()
 redis_client = get_redis_client()
 
 

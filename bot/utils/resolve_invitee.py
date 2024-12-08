@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 from aiogram.exceptions import TelegramBadRequest
 
-from bot.core.bot_instance import bot
+from bot.core.bot_instance import get_bot_instance
 from bot.messages.invitee_deeplink import invitee_deep_link
 from bot.messages.partner_messages import invalid_format
 from bot.messages.partner_messages import invitation_link_created
@@ -12,6 +12,8 @@ from bot.messages.partner_messages import unexpected_err_msg
 
 if TYPE_CHECKING:
     from aiogram.types import Message
+
+bot = get_bot_instance()
 
 
 async def resolve_invitee_id(message: Message, username: str):
