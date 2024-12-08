@@ -30,6 +30,8 @@ def retrieve_symmetric_key(conversation_id: str) -> bytes:
 
 async def encrypt_symmetric_key_with_rsa(public_key_pem: bytes, symmetric_key: bytes):
     """Symmetric key is encrypted with public key to be safely passed to other party."""
+    if isinstance(public_key_pem, str):
+        public_key_pem = public_key_pem.encode("utf-8")
 
     def sync_encrypt_symmetric_key_with_rsa():
         """Encrypts the symmetric key with the recipient's public RSA key."""
@@ -48,6 +50,9 @@ async def encrypt_symmetric_key_with_rsa(public_key_pem: bytes, symmetric_key: b
 
 
 async def decrypt_symmetric_key_with_rsa(private_key_pem: bytes, encrypted_key: bytes):
+    if isinstance(private_key_pem, str):
+        private_key_pem = private_key_pem.encode("utf-8")
+
     def sync_decrypt_symmetric_key_with_rsa():
         from cryptography.hazmat.primitives.serialization import load_pem_private_key
 
