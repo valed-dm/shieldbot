@@ -1,5 +1,7 @@
-from bot.core.redis_client import redis_client
+from bot.core.redis_client import get_redis_client
 from bot.utils.conversation_setup import conversation_setup
+
+redis_client = get_redis_client()
 
 
 async def resolve_invitation(secure_id: str, invitee_id: int) -> bool:

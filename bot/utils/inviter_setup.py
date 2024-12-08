@@ -2,7 +2,9 @@ from uuid import uuid4
 
 import keyring
 
-from bot.core.redis_client import redis_client
+from bot.core.redis_client import get_redis_client
+
+redis_client = get_redis_client()
 
 
 async def inviter_setup(inviter_id: int, ttl=3600):

@@ -1,8 +1,10 @@
 import json
 
-from bot.core.redis_client import redis_client
+from bot.core.redis_client import get_redis_client
 
 TTL = 3600
+
+redis_client = get_redis_client()
 
 
 async def store_invitee(

@@ -1,7 +1,7 @@
 import json
 import logging
 
-from bot.core.redis_client import redis_client
+from bot.core.redis_client import get_redis_client
 from bot.keys.key_status import notify_key_received
 from bot.keys.rsa_key import decrypt_private_key
 from bot.keys.rsa_store import sync_retrieve_private_key
@@ -9,6 +9,7 @@ from bot.keys.sym_key import decrypt_symmetric_key_with_rsa
 from bot.keys.sym_key import save_symmetric_key
 
 logger = logging.getLogger(__name__)
+redis_client = get_redis_client()
 
 
 async def listen_for_notifications(inviter_id: int):

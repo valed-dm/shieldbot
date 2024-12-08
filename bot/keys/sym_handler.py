@@ -3,12 +3,13 @@ import contextlib
 import json
 import logging
 
-from bot.core.redis_client import redis_client
+from bot.core.redis_client import get_redis_client
 from bot.keys.key_listen import listen_for_notifications
 
-sym_notification_tasks = {}
-
 logger = logging.getLogger("SYM_HANDLER")
+redis_client = get_redis_client()
+
+sym_notification_tasks = {}
 
 
 async def start_sym_handler(inviter_id: int):

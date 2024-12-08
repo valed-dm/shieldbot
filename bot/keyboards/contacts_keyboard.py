@@ -6,8 +6,10 @@ from aiogram.types import InlineKeyboardButton
 from aiogram.types import InlineKeyboardMarkup
 
 from bot.core.bot_instance import bot
-from bot.core.redis_client import redis_client
+from bot.core.redis_client import get_redis_client
 from bot.utils.dynamic_keyboard import dynamic_keyboard
+
+redis_client = get_redis_client()
 
 
 async def contacts_keyboard(user_id: int) -> InlineKeyboardMarkup:

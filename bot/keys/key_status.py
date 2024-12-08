@@ -1,6 +1,8 @@
 import json
 
-from bot.core.redis_client import redis_client
+from bot.core.redis_client import get_redis_client
+
+redis_client = get_redis_client()
 
 
 async def notify_key_ready(inviter_id: int, secure_id: str):
