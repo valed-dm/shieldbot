@@ -1,6 +1,6 @@
 from aiogram import types
 
-from bot.keys.symmetric_key import retrieve_symmetric_key
+from bot.keys.sym_key import retrieve_symmetric_key
 from bot.utils.encrypt_decrypt import decrypt_message_with_aes
 from bot.utils.encrypt_decrypt import encrypt_message_with_aes
 
