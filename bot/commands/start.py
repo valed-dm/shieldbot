@@ -4,8 +4,7 @@ import logging
 from typing import TYPE_CHECKING
 
 from bot.keyboards.menu_keyboard import main_menu_keyboard
-from bot.keys.sym_handler import start_close_sym_listener
-from bot.keys.sym_handler import start_sym_handler
+from bot.keys.sym_pipe import sym_exchange_cycle
 from bot.utils.inviter_workflow import initialize_inviter_workflow
 from bot.utils.resolve_invitation import resolve_invitation
 from bot.utils.store_invitee import store_invitee
@@ -80,10 +79,4 @@ async def start_command(message: types.Message):
             reply_markup=main_menu_keyboard,
         )
 
-        close_sym_listener = start_close_sym_listener(inviter_id=user_id)
-        if close_sym_listener:
-            await close_sym_listener
-
-        sym_notification_listener = await start_sym_handler(inviter_id=user_id)
-        if sym_notification_listener:
-            await sym_notification_listener
+        await sym_exchange_cycle(inviter_id=user_id)
