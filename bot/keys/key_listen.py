@@ -8,16 +8,15 @@ from bot.keys.rsa_store import sync_retrieve_private_key
 from bot.keys.sym_key import decrypt_symmetric_key_with_rsa
 from bot.keys.sym_key import save_symmetric_key
 
-logger = logging.getLogger(__name__)
+logger = logging.getLogger("SYM_LISTENER")
 redis_client = get_redis_client()
 
 
-async def listen_for_notifications(inviter_id: int):
+async def listen_for_sym_notifications(inviter_id: int):
     """Listens for notifications, decrypts and store the symmetric key."""
+    channel_name = f"conversation:notifications:{inviter_id}"
     redis_sub = redis_client.pubsub()
-    await redis_sub.subscribe(f"conversation:notifications:{inviter_id}")
-
-    logging.info("Symmetric Key handler started listening for notifications!")
+    await redis_sub.subscribe(channel_name)
 
     async for message in redis_sub.listen():
         if message["type"] == "message":
