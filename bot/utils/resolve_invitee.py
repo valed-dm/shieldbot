@@ -6,9 +6,9 @@ from aiogram.exceptions import TelegramBadRequest
 
 from bot.core.bot_instance import get_bot_instance
 from bot.messages.invitee_deeplink import invitee_deep_link
-from bot.messages.partner_messages import invalid_format
-from bot.messages.partner_messages import invitation_link_created
-from bot.messages.partner_messages import unexpected_err_msg
+from bot.messages.messages_predefined import invalid_format
+from bot.messages.messages_predefined import invitation_link_created
+from bot.messages.messages_predefined import unexpected_err_msg
 
 if TYPE_CHECKING:
     from aiogram.types import Message
@@ -16,7 +16,7 @@ if TYPE_CHECKING:
 bot = get_bot_instance()
 
 
-async def resolve_invitee_id(message: Message, username: str):
+async def resolve_invitee(message: Message, username: str):
     """
     Resolves the invitee's unique Telegram ID using their username.
     Ensures the username is valid and invitee is accessible to the bot.
@@ -41,4 +41,4 @@ async def resolve_invitee_id(message: Message, username: str):
         return {"success": False, "message": unexpected_err_msg(username, e)}
 
     else:
-        return {"success": True, "invitee_id": invitee.id}
+        return {"success": True, "invitee": invitee}
