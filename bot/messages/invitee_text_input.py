@@ -1,0 +1,80 @@
+from __future__ import annotations
+
+import logging
+import os
+from typing import TYPE_CHECKING
+
+from dotenv import load_dotenv
+
+from bot.core.bot_instance import get_bot_instance
+from bot.core.redis_client import get_redis_client
+from bot.keyboards.inviter_contacts_keyboard import contacts_keyboard
+from bot.utils.resolve_invitee import resolve_invitee
+from bot.utils.user_data_resolver import UserDataResolver
+
+if TYPE_CHECKING:
+    from aiogram import types
+    from aiogram.fsm.context import FSMContext
+
+load_dotenv()
+
+bot = get_bot_instance()
+redis_client = get_redis_client()
+LOGO = os.getenv("LOGO")
+
+
+async def on_invitee_text_input(
+    message: types.Message,
+    state: FSMContext,
+) -> None:
+    """Manual invitee's username input processing."""
+    input_text = message.text.strip()
+    result = await resolve_invitee(message=message, username=input_text)
+
+    if result["success"] == "link_ready":
+        # clean up ['invitee username text input'] state
+        await state.clear()
+        await bot.send_message(message.chat.id, result["message"])
+        logging.info(result["message"])
+
+    elif result["success"]:
+        await state.clear()
+
+        secure_id = ""
+        inviter = UserDataResolver(message)
+        invitee = result["invitee"]
+
+        conversations = await redis_client.smembers(
+            f"inviter_conversations:{inviter.id}",
+        )
+        if conversations:
+            for conversation in conversations:
+                stored_secure_id, stored_invitee_id = conversation.split(":")
+                if stored_invitee_id == invitee.id:
+                    secure_id = stored_secure_id
+                    break
+
+        await state.update_data(
+            secure_id=secure_id,
+            inviter_id=int(inviter.id),
+            invitee_id=invitee.id,
+        )
+
+        contacts, contacts_qty = await contacts_keyboard(inviter.id)
+        await bot.send_message(
+            inviter.id,
+            f"Press button {invitee.username} to start {LOGO} conversation",
+            reply_markup=contacts,
+        )
+        await bot.send_message(
+            invitee.id,
+            f"Now waiting for {LOGO} with {inviter.username} to start",
+        )
+
+        success_msg = f"{LOGO} dialog {inviter.username}/{invitee.username} initiated."
+        logging.info(success_msg)
+
+    else:
+        await bot.send_message(message.chat.id, result["message"])
+
+        logging.error(result["message"])
