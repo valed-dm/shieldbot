@@ -1,82 +1,107 @@
 from __future__ import annotations
 
 import logging
+import os
 from typing import TYPE_CHECKING
 
-from bot.keyboards.menu_keyboard import main_menu_keyboard
+from dotenv import load_dotenv
+
+from bot.core.bot_instance import get_bot_instance
+from bot.keyboards.inviter_contacts_keyboard import contacts_keyboard
+from bot.keyboards.main_menu_keyboard import main_menu_keyboard
 from bot.keys.sym_pipe import sym_exchange_cycle
 from bot.utils.inviter_workflow import initialize_inviter_workflow
 from bot.utils.resolve_invitation import resolve_invitation
 from bot.utils.store_invitee import store_invitee
+from bot.utils.user_data_resolver import UserDataResolver
 
 if TYPE_CHECKING:
     from aiogram import types
+    from aiogram.fsm.context import FSMContext
+
+load_dotenv()
 
 logger = logging.getLogger("START_COMMAND")
 
+bot = get_bot_instance()
+LOGO = os.getenv("LOGO")
 
-async def start_command(message: types.Message):
+
+async def start_command(message: types.Message, state: FSMContext):
     text = message.text
+    user = UserDataResolver(message)
 
-    # Invitee's side SecureTalkBot operations
     if len(text.split()) > 1:
-        success = False
+        # Invitee's side deep link processing operations
+        inviter_id: str | None = None
+        inviter_username: str | None = None
+
         secure_id = text.split()[1]
 
-        invitee_id = message.from_user.id
-        invitee_username = message.from_user.username  # Username
-        invitee_first_name = message.from_user.first_name  # First Name
-        invitee_last_name = message.from_user.last_name or "not_available"
-
-        msg = f"Resolving invitation: secure_id={secure_id}, invitee_id={invitee_id}"
+        msg = f"Invitation handling for {LOGO} '{user.username}' started"
         logger.info(msg)
 
         try:
-            success = await resolve_invitation(secure_id, invitee_id)
+            inviter_id, inviter_username = await resolve_invitation(
+                secure_id,
+                user.id,
+            )
         except Exception as e:
-            msg = f"Invitation has not been resolved for invitee_id={invitee_id}: {e}"
+            msg = f"Invitation is not resolved for {LOGO} '{user.username}': {e}"
             logger.exception(msg)
             await message.answer(
-                f"An error {e} occurred while resolving invitation. Please try again.",
+                f"An error {e} occurred while resolving {LOGO} '{user.username}' "
+                f"invitation. Please try again.",
             )
 
-        if success:
-            await store_invitee(
+        if inviter_id:
+            await store_invitee(secure_id, user)
+
+            await state.update_data(
                 secure_id=secure_id,
-                partner_id=invitee_id,
-                partner_username=invitee_username,
-                partner_first_name=invitee_first_name,
-                partner_last_name=invitee_last_name,
+                inviter_id=int(inviter_id),
+                invitee_id=user.id,
             )
 
-            await message.answer("You are now connected for secure chat!")
+            contacts, contacts_qty = await contacts_keyboard(int(inviter_id))
+            await bot.send_message(
+                inviter_id,
+                f"Press button '{user.username}' to start {LOGO} conversation",
+                reply_markup=contacts,
+            )
+            await bot.send_message(
+                user.id,
+                f"Now waiting for {LOGO} with '{inviter_username}' to start",
+            )
 
-            msg = f"Invitation resolved successfully for invitee_id={invitee_id}"
+            msg = (
+                f"{LOGO} {inviter_username} invitation resolved successfully: "
+                f"{user.id}:'{user.username}'"
+            )
             logger.info(msg)
         else:
-            msg = f"Invalid or expired invitation for invitee_id={invitee_id}"
+            msg = (
+                f"{LOGO} '{inviter_username}' invalid or expired invitation: "
+                f"{user.id}:'{user.username}'"
+            )
             logger.warning(msg)
-            await message.answer("Invalid or expired invitation link.")
-
-    # Inviter's side SecureTalkBot operations
+            await message.answer(f"Invalid or expired {LOGO} invitation link.")
     else:
-        user_id = message.from_user.id
-
+        # Inviter's side preparing operations
         try:
-            await initialize_inviter_workflow(inviter_id=user_id)
-            msg = f"RSA key pair for user_id={user_id} created successfully."
+            await initialize_inviter_workflow(user.id)
+            msg = f"RSA key pair for {LOGO} '{user.username}' is prepared."
             logger.info(msg)
         except Exception as e:
-            msg = f"Error initializing RSA keys for user_id={message.from_user.id}: {e}"
+            msg = f"Error initializing RSA keys for {LOGO} '{user.username}': {e}"
             logger.exception(msg)
             await message.answer(
-                "An error occurred while setting up your secure chat. "
-                "Please try again.",
+                f"An error occurred while setting up {LOGO}. Please try again.",
             )
 
         await message.answer(
-            "Welcome to SecureTalk! Choose an action below:",
+            f"Welcome to {LOGO}! Choose an action below:",
             reply_markup=main_menu_keyboard,
         )
 
-        await sym_exchange_cycle(inviter_id=user_id)
+        await sym_exchange_cycle(user.id)
