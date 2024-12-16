@@ -2,17 +2,19 @@ from aiogram import types
 from aiogram.exceptions import TelegramAPIError
 from aiogram.fsm.context import FSMContext
 
-from bot.keys.sym_key import retrieve_symmetric_key
-from bot.utils.encrypt_decrypt import decrypt_message_with_aes
-from bot.utils.encrypt_decrypt import encrypt_message_with_aes
+from bot.core.state import FSMStateManager
+from bot.keys.aes.sym_key import retrieve_symmetric_key
+from bot.keys.encrypt_decrypt import decrypt_message_with_aes
+from bot.keys.encrypt_decrypt import encrypt_message_with_aes
 
 
 async def handle_message(message: types.Message, state: FSMContext):
-    data = await state.get_data()
+    fsm_manager = FSMStateManager(state)
+    await fsm_manager.load()
 
-    secure_id = data.get("secure_id")
-    inviter_id = data.get("inviter_id")
-    invitee_id = data.get("invitee_id")
+    secure_id = fsm_manager.secure_id
+    inviter_id = fsm_manager.inviter_id
+    invitee_id = fsm_manager.invitee_id
 
     # Ensure the secure conversation is initialized
     if not secure_id:
