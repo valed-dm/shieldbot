@@ -1,6 +1,6 @@
-from bot.keys.rsa_key import encrypt_private_key
-from bot.keys.rsa_key import generate_rsa_keypair
-from bot.keys.rsa_store import rsa_store
+from bot.keys.rsa.rsa_key import encrypt_private_key
+from bot.keys.rsa.rsa_key import generate_rsa_keypair
+from bot.keys.rsa.rsa_store import rsa_store
 
 
 async def initialize_inviter_workflow(inviter_id: int):
