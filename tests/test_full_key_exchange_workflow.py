@@ -1,9 +1,9 @@
 import pytest
 
-from bot.keys.rsa_key import generate_rsa_keypair
-from bot.keys.sym_key import decrypt_symmetric_key_with_rsa
-from bot.keys.sym_key import encrypt_symmetric_key_with_rsa
-from bot.keys.sym_key import generate_symmetric_key
+from bot.keys.aes.sym_key import decrypt_symmetric_key_with_rsa
+from bot.keys.aes.sym_key import encrypt_symmetric_key_with_rsa
+from bot.keys.aes.sym_key import generate_symmetric_key
+from bot.keys.rsa.rsa_key import generate_rsa_keypair
 
 
 async def test_full_key_exchange_workflow():
