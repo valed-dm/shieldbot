@@ -2,11 +2,11 @@ from aiogram import Router
 from aiogram.filters import Filter
 from aiogram.types import CallbackQuery
 
-from bot.callbacks.confirm_button_click import on_confirm_button_click
-from bot.callbacks.generate_rsa_keypair import generate_keypair_callback
-from bot.callbacks.invitee_button_input import on_invitee_button_click
-from bot.callbacks.invitee_manual_input import on_manual_invitee_input
-from bot.callbacks.invitees_reset import on_reset_invitees
+from bot.callbacks.invitee.confirm_button_click import on_confirm_button_click
+from bot.callbacks.invitee.generate_rsa_keypair import generate_keypair_callback
+from bot.callbacks.invitee.invitee_button_input import on_invitee_button_click
+from bot.callbacks.invitee.invitee_manual_input import on_manual_invitee_input
+from bot.callbacks.invitee.invitees_reset import on_reset_invitees
 from bot.commands.help import help_callback
 from bot.commands.securetalk import on_secure_talk_start
 from bot.commands.settings import on_settings
