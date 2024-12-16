@@ -1,11 +1,16 @@
 from aiogram import types
 
+from bot.core.user_data_resolver import UserDataResolver
 from bot.keyboards.button_invite import invite_button
 from bot.keyboards.inviter_contacts_keyboard import contacts_keyboard
 
 
 async def on_secure_talk_start(callback_query: types.CallbackQuery):
-    contacts_markup, contacts_qty = await contacts_keyboard(callback_query.from_user.id)
+    inviter = UserDataResolver(callback_query)
+    contacts_markup, contacts_qty = await contacts_keyboard(
+        inviter.id,
+        inviter.username,
+    )
 
     if contacts_qty != 0:
         await callback_query.message.answer(
