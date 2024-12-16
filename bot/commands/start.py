@@ -7,13 +7,14 @@ from typing import TYPE_CHECKING
 from dotenv import load_dotenv
 
 from bot.core.bot_instance import get_bot_instance
+from bot.core.state import FSMStateManager
+from bot.core.user_data_resolver import UserDataResolver
 from bot.keyboards.inviter_contacts_keyboard import contacts_keyboard
 from bot.keyboards.main_menu_keyboard import main_menu_keyboard
-from bot.keys.sym_pipe import sym_exchange_cycle
-from bot.utils.inviter_workflow import initialize_inviter_workflow
-from bot.utils.resolve_invitation import resolve_invitation
-from bot.utils.store_invitee import store_invitee
-from bot.utils.user_data_resolver import UserDataResolver
+from bot.keys.aes.sym_pipe import sym_exchange_cycle
+from bot.utils.invitee.resolve_invitation import resolve_invitation
+from bot.utils.invitee.store_invitee import store_invitee
+from bot.utils.inviter.inviter_workflow import initialize_inviter_workflow
 
 if TYPE_CHECKING:
     from aiogram import types
@@ -57,13 +58,19 @@ async def start_command(message: types.Message, state: FSMContext):
         if inviter_id:
             await store_invitee(secure_id, user)
 
-            await state.update_data(
-                secure_id=secure_id,
-                inviter_id=int(inviter_id),
-                invitee_id=user.id,
-            )
+            fsm_manager = FSMStateManager(state)
+            await fsm_manager.load()
 
-            contacts, contacts_qty = await contacts_keyboard(int(inviter_id))
+            fsm_manager.secure_id = secure_id
+            fsm_manager.inviter_id = inviter_id
+            fsm_manager.invitee_id = user.id
+
+            await fsm_manager.save()
+
+            contacts, contacts_qty = await contacts_keyboard(
+                int(inviter_id),
+                inviter_username,
+            )
             await bot.send_message(
                 inviter_id,
                 f"Press button '{user.username}' to start {LOGO} conversation",
