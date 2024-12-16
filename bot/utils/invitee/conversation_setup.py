@@ -1,9 +1,9 @@
 from bot.core.redis_client import get_redis_client
-from bot.keys.key_status import notify_key_ready
-from bot.keys.sym_key import encrypt_symmetric_key_with_rsa
-from bot.keys.sym_key import generate_symmetric_key
-from bot.keys.sym_key import save_symmetric_key
-from bot.utils.inviter_conversations import store_inviter_conversations
+from bot.keys.aes.sym_key import encrypt_symmetric_key_with_rsa
+from bot.keys.aes.sym_key import generate_symmetric_key
+from bot.keys.aes.sym_key import save_symmetric_key
+from bot.keys.exchange.key_status import notify_key_ready
+from bot.utils.inviter.inviter_conversations import store_inviter_conversations
 
 TTL = 3600
 

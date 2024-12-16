@@ -2,10 +2,11 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
+from aiogram.exceptions import TelegramAPIError
 from aiogram.exceptions import TelegramBadRequest
 
 from bot.core.bot_instance import get_bot_instance
-from bot.messages.invitee_deeplink import invitee_deep_link
+from bot.messages.invitee.invitee_deeplink import invitee_deep_link
 from bot.messages.messages_predefined import invalid_format
 from bot.messages.messages_predefined import invitation_link_created
 from bot.messages.messages_predefined import unexpected_err_msg
@@ -37,7 +38,7 @@ async def resolve_invitee(message: Message, username: str):
 
         return {"success": False, "message": unexpected_err_msg(username, e)}
 
-    except Exception as e:  # noqa: BLE001
+    except TelegramAPIError as e:
         return {"success": False, "message": unexpected_err_msg(username, e)}
 
     else:

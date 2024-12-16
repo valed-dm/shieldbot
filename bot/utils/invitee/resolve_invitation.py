@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from bot.core.redis_client import get_redis_client
-from bot.utils.conversation_setup import conversation_setup
+from bot.utils.invitee.conversation_setup import conversation_setup
 
 redis_client = get_redis_client()
 

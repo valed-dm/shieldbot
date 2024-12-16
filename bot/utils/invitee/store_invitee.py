@@ -1,7 +1,7 @@
 import json
 
 from bot.core.redis_client import get_redis_client
-from bot.utils.user_data_resolver import UserDataResolver
+from bot.core.user_data_resolver import UserDataResolver
 
 TTL = 3600
 
