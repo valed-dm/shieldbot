@@ -1,7 +1,7 @@
 from aiogram import Bot
 from aiogram import types
 
-from bot.keys.rsa_key import generate_rsa_keypair
+from bot.keys.rsa.rsa_key import generate_rsa_keypair
 
 
 async def generate_keypair_callback(callback_query: types.CallbackQuery, bot: Bot):
