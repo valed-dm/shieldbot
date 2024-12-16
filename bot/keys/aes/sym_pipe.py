@@ -1,5 +1,5 @@
-from bot.keys.sym_cleanup import sym_listener_cleaner
-from bot.keys.sym_handler import start_sym_handler
+from bot.keys.aes.sym_cleanup import sym_listener_cleaner
+from bot.keys.aes.sym_handler import start_sym_handler
 
 
 async def sym_exchange_cycle(inviter_id: int):

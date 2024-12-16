@@ -3,7 +3,7 @@ import json
 import logging
 
 from bot.core.redis_client import get_redis_client
-from bot.keys.sym_handler import stop_sym_handler
+from bot.keys.aes.sym_handler import stop_sym_handler
 
 logger = logging.getLogger("SYM_CLEANUP")
 

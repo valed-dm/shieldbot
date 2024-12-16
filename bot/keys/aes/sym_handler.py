@@ -2,7 +2,7 @@ import asyncio
 import contextlib
 import logging
 
-from bot.keys.key_listen import listen_for_sym_notifications
+from bot.keys.exchange.key_listen import listen_for_sym_notifications
 
 logger = logging.getLogger("SYM_HANDLER")
 
