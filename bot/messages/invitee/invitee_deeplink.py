@@ -3,8 +3,8 @@ import os
 from aiogram.types import Message
 from dotenv import load_dotenv
 
-from bot.utils.inviter_setup import inviter_setup
-from bot.utils.user_data_resolver import UserDataResolver
+from bot.core.user_data_resolver import UserDataResolver
+from bot.utils.inviter.inviter_setup import inviter_setup
 
 load_dotenv()
 

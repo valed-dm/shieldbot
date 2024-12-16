@@ -8,9 +8,10 @@ from dotenv import load_dotenv
 
 from bot.core.bot_instance import get_bot_instance
 from bot.core.redis_client import get_redis_client
+from bot.core.state import FSMStateManager
+from bot.core.user_data_resolver import UserDataResolver
 from bot.keyboards.inviter_contacts_keyboard import contacts_keyboard
-from bot.utils.resolve_invitee import resolve_invitee
-from bot.utils.user_data_resolver import UserDataResolver
+from bot.utils.invitee.resolve_invitee import resolve_invitee
 
 if TYPE_CHECKING:
     from aiogram import types
@@ -54,13 +55,16 @@ async def on_invitee_text_input(
                     secure_id = stored_secure_id
                     break
 
-        await state.update_data(
-            secure_id=secure_id,
-            inviter_id=int(inviter.id),
-            invitee_id=invitee.id,
-        )
+        fsm_manager = FSMStateManager(state)
+        await fsm_manager.load()
 
-        contacts, contacts_qty = await contacts_keyboard(inviter.id)
+        fsm_manager.secure_id = secure_id
+        fsm_manager.inviter_id = inviter.id
+        fsm_manager.invitee_id = invitee.id
+
+        await fsm_manager.save()
+
+        contacts, contacts_qty = await contacts_keyboard(inviter.id, inviter.username)
         await bot.send_message(
             inviter.id,
             f"Press button {invitee.username} to start {LOGO} conversation",
@@ -76,5 +80,4 @@ async def on_invitee_text_input(
 
     else:
         await bot.send_message(message.chat.id, result["message"])
-
         logging.error(result["message"])
