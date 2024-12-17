@@ -7,15 +7,15 @@ from bot.callbacks.invitee.invitee_button_input import on_invitee_button_click
 from bot.callbacks.invitee.invitee_manual_input import on_manual_invitee_input
 from bot.callbacks.invitee.invitees_reset import on_reset_invitees
 from bot.commands.help import help_callback
-from bot.commands.securetalk import on_secure_talk_start
+from bot.commands.securetalk import on_prepare_secure_talk
 from bot.commands.settings import on_settings
 
 CALLBACK_HELP = "help"
 CALLBACK_SETTINGS = "settings"
-CALLBACK_START_SECURETALK = "start_securetalk"
+CALLBACK_PREPARE_SECURETALK = "prepare_securetalk"
+CALLBACK_MANUAL_INVITEE_INPUT = "invite_for_securetalk"
 CALLBACK_SAVED_INVITEE_INPUT = "ir:"
 CALLBACK_ACCEPT_INVITATION = "ie:"
-CALLBACK_MANUAL_INVITEE_INPUT = "invite_for_securetalk"
 CALLBACK_RESET_INVITEES = "reset_invitees"
 
 router = Router(name=__name__)
@@ -38,8 +38,8 @@ router.callback_query.register(
     CallbackFilter(CALLBACK_SETTINGS),
 )
 router.callback_query.register(
-    on_secure_talk_start,
-    CallbackFilter(CALLBACK_START_SECURETALK),
+    on_prepare_secure_talk,
+    CallbackFilter(CALLBACK_PREPARE_SECURETALK),
 )
 router.callback_query.register(
     on_invitee_button_click,
