@@ -1,5 +1,8 @@
+import os
+
 from aiogram import types
 from aiogram.fsm.context import FSMContext
+from dotenv import load_dotenv
 
 from bot.callbacks.data.redis_reference import get_callback_data
 from bot.core.bot_instance import get_bot_instance
@@ -8,7 +11,10 @@ from bot.core.user_data_resolver import UserDataResolver
 from bot.keyboards.button_confirm import confirm_button
 from bot.keys.exchange.key_status import notify_key_received
 
+load_dotenv()
 bot = get_bot_instance()
+
+LOGO = os.getenv("LOGO")
 
 
 async def on_invitee_button_click(
@@ -49,10 +55,10 @@ async def on_invitee_button_click(
     confirm_start = confirm_button(invitee_callback_confirm_conversation_data)
     await bot.send_message(
         chat_id=invitee_id,
-        text=f"✅ {inviter_username} is waiting for 🔒SecureTalk to be confirmed.",
+        text=f"'{inviter_username}' is waiting for {LOGO} to be confirmed.",
         reply_markup=confirm_start,
     )
 
     await callback_query.message.answer(
-        f"✅ Waiting for {invitee_username} 🔒SecureTalk confirmation...",
+        f"Waiting for '{invitee_username}' {LOGO} confirmation...",
     )
