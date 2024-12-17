@@ -11,6 +11,7 @@ from bot.core.redis_client import get_redis_client
 from bot.core.state import FSMStateManager
 from bot.core.user_data_resolver import UserDataResolver
 from bot.keyboards.inviter_contacts_keyboard import contacts_keyboard
+from bot.messages.invitee.invitee_deeplink import invitation_link_created_message
 from bot.utils.invitee.resolve_invitee import resolve_invitee
 
 if TYPE_CHECKING:
@@ -35,8 +36,13 @@ async def on_invitee_text_input(
     if result["success"] == "link_ready":
         # clean up ['invitee username text input'] state
         await state.clear()
-        await bot.send_message(message.chat.id, result["message"])
-        logging.info(result["message"])
+        await invitation_link_created_message(
+            message=message,
+            deep_link_text=result["message"],
+        )
+        inviter = message.from_user.username
+        msg = f"{inviter} prepared invitation {LOGO} link for {input_text}"
+        logging.info(msg)
 
     elif result["success"]:
         await state.clear()
