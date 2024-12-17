@@ -3,7 +3,6 @@ from aiogram.filters import Filter
 from aiogram.types import CallbackQuery
 
 from bot.callbacks.invitee.confirm_button_click import on_confirm_button_click
-from bot.callbacks.invitee.generate_rsa_keypair import generate_keypair_callback
 from bot.callbacks.invitee.invitee_button_input import on_invitee_button_click
 from bot.callbacks.invitee.invitee_manual_input import on_manual_invitee_input
 from bot.callbacks.invitee.invitees_reset import on_reset_invitees
@@ -13,8 +12,6 @@ from bot.commands.settings import on_settings
 
 CALLBACK_HELP = "help"
 CALLBACK_SETTINGS = "settings"
-CALLBACK_GENERATE_KEYPAIR = "generate_keypair"
-CALLBACK_SEND_PUBLIC_KEY = "send_public_key"
 CALLBACK_START_SECURETALK = "start_securetalk"
 CALLBACK_SAVED_INVITEE_INPUT = "ir:"
 CALLBACK_ACCEPT_INVITATION = "ie:"
@@ -41,24 +38,16 @@ router.callback_query.register(
     CallbackFilter(CALLBACK_SETTINGS),
 )
 router.callback_query.register(
-    generate_keypair_callback,
-    CallbackFilter(CALLBACK_GENERATE_KEYPAIR),
-)
-router.callback_query.register(
-    on_secure_talk_start,
-    CallbackFilter(CALLBACK_SEND_PUBLIC_KEY),
-)
-router.callback_query.register(
     on_secure_talk_start,
     CallbackFilter(CALLBACK_START_SECURETALK),
 )
 router.callback_query.register(
     on_invitee_button_click,
-    lambda c: c.data.startswith(CALLBACK_SAVED_INVITEE_INPUT),
+    lambda c: c.data and c.data.startswith(CALLBACK_SAVED_INVITEE_INPUT),
 )
 router.callback_query.register(
     on_confirm_button_click,
-    lambda c: c.data.startswith(CALLBACK_ACCEPT_INVITATION),
+    lambda c: c.data and c.data.startswith(CALLBACK_ACCEPT_INVITATION),
 )
 router.callback_query.register(
     on_manual_invitee_input,
