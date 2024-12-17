@@ -1,3 +1,5 @@
+"""Not in use now. Module was conceived for manual public key exchange"""
+
 from aiogram import Bot
 from aiogram import types
 
