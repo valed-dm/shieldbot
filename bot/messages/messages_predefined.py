@@ -16,7 +16,3 @@ def unexpected_err_msg(username: str, error: Exception) -> str:
         f"{LOGO} error resolving partner ID for {username!r}: {error!r}. "
         f"Please try again later."
     )
-
-
-def invitation_link_created(username):
-    return f"Share {LOGO} link above with {username!r}."
