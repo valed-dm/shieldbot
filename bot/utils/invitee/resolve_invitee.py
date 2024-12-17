@@ -8,7 +8,6 @@ from aiogram.exceptions import TelegramBadRequest
 from bot.core.bot_instance import get_bot_instance
 from bot.messages.invitee.invitee_deeplink import invitee_deep_link
 from bot.messages.messages_predefined import invalid_format
-from bot.messages.messages_predefined import invitation_link_created
 from bot.messages.messages_predefined import unexpected_err_msg
 
 if TYPE_CHECKING:
@@ -30,10 +29,10 @@ async def resolve_invitee(message: Message, username: str):
 
     except TelegramBadRequest as e:
         if "chat not found" in str(e):
-            await invitee_deep_link(message=message, invitee=username)
+            deep_link_text = await invitee_deep_link(message, invitee=username)
             return {
                 "success": "link_ready",
-                "message": invitation_link_created(username),
+                "message": deep_link_text,
             }
 
         return {"success": False, "message": unexpected_err_msg(username, e)}
