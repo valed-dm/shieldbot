@@ -25,7 +25,7 @@ async def get_callback_data(reference_id):
     """
     data = await redis_client.get(reference_id)
     if data is None:
-        msg = "Reference ID not found or expired"
+        msg = "Reference ID has expired or is invalid!"
         raise ValueError(msg)
     return data
 
