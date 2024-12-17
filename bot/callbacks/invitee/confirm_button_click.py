@@ -1,12 +1,18 @@
+import os
+
 from aiogram import types
 from aiogram.fsm.context import FSMContext
+from dotenv import load_dotenv
 
 from bot.callbacks.data.redis_reference import get_callback_data
 from bot.core.bot_instance import get_bot_instance
 from bot.core.state import FSMStateManager
 from bot.core.user_data_resolver import UserDataResolver
 
+load_dotenv()
 bot = get_bot_instance()
+
+LOGO = os.getenv("LOGO")
 
 
 async def on_confirm_button_click(
@@ -31,8 +37,6 @@ async def on_confirm_button_click(
         await callback_query.answer("❌ Invitation data corrupted!", show_alert=True)
         return
 
-    msg = f"✅ {inviter_username}/{invitee_username} 🔒SecureTalk is active!"
-
     fsm_manager = FSMStateManager(state)
     await fsm_manager.load()
 
@@ -42,6 +46,7 @@ async def on_confirm_button_click(
 
     await fsm_manager.save()
 
+    msg = f"{LOGO} '{inviter_username}✅{invitee_username}' is active!"
     await bot.send_message(
         chat_id=inviter_id,
         text=msg,
