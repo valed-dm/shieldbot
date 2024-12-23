@@ -67,29 +67,29 @@ async def start_command(message: types.Message, state: FSMContext):
 
             await fsm_manager.save()
 
-            contacts, contacts_qty = await contacts_keyboard(
+            contacts, _ = await contacts_keyboard(
                 int(inviter_id),
                 inviter_username,
             )
             await bot.send_message(
                 inviter_id,
-                f"Press button '{user.username}' to start {LOGO} conversation",
+                f"Press button '🔒 {user.username}' to start {LOGO}.",
                 reply_markup=contacts,
             )
             await bot.send_message(
                 user.id,
-                f"Now waiting for {LOGO} with '{inviter_username}' to start",
+                f"Now waiting for {LOGO} with @{inviter_username} to start",
             )
 
             msg = (
-                f"{LOGO} {inviter_username} invitation resolved successfully: "
-                f"{user.id}:'{user.username}'"
+                f"{LOGO} @{inviter_username} invitation resolved successfully: "
+                f"{user.id}:@{user.username}"
             )
             logger.info(msg)
         else:
             msg = (
-                f"{LOGO} '{inviter_username}' invalid or expired invitation: "
-                f"{user.id}:'{user.username}'"
+                f"{LOGO} @{inviter_username} invalid or expired invitation: "
+                f"{user.id}:@{user.username}"
             )
             logger.warning(msg)
             await message.answer(f"Invalid or expired {LOGO} invitation link.")
@@ -97,17 +97,17 @@ async def start_command(message: types.Message, state: FSMContext):
         # Inviter's side preparing operations
         try:
             await initialize_inviter_workflow(user.id)
-            msg = f"RSA key pair for {LOGO} '{user.username}' is prepared."
+            msg = f"RSA key pair for {LOGO} @{user.username} is prepared."
             logger.info(msg)
         except Exception as e:
-            msg = f"Error initializing RSA keys for {LOGO} '{user.username}': {e}"
+            msg = f"Error initializing RSA keys for {LOGO} @{user.username}: {e}"
             logger.exception(msg)
             await message.answer(
                 f"An error occurred while setting up {LOGO}. Please try again.",
             )
 
         await message.answer(
-            f"Welcome to {LOGO}! Choose an action below:",
+            f"Welcome to {LOGO}!",
             reply_markup=main_menu_keyboard,
         )
 
