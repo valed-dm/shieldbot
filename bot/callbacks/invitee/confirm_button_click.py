@@ -20,13 +20,13 @@ async def on_confirm_button_click(
     callback_query: types.CallbackQuery,
     state: FSMContext,
 ):
-    """Invitee state updating after 'Confirm ' button click."""
-    verifier = CallbackVerifier(callback_query, state, "invitee")
+    """Invitee state updating on 'Confirm' button click."""
+    verifier = CallbackVerifier(callback_query, state)
 
     try:
-        if not await verifier.verify(expected_prefix="ie:", params_count=5):
+        if not await verifier.verify(expected_prefix="ie:accept:", params_count=5):
             return
-        await verifier.update_state()
+        await verifier.update_conversation_state()
 
     except ValueError as e:
         msg = f"Callback verification failed: {e}"
@@ -34,7 +34,7 @@ async def on_confirm_button_click(
         await callback_query.answer(str(e), show_alert=True)
 
     msg = (
-        f"{LOGO} '{verifier.inviter_username}✅{verifier.invitee_username}' is active!"
+        f"{LOGO} @{verifier.inviter_username}✅@{verifier.invitee_username} is active!"
     )
     await bot.send_message(
         chat_id=verifier.inviter_id,
