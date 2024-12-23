@@ -20,8 +20,8 @@ async def on_prepare_secure_talk(callback_query: types.CallbackQuery):
     )
 
     text_invite = (
-        f"Invite a partner for {LOGO} from list below;\n"
-        f"Use 'Settings:Invite partner' if not found in a list."
+        f"Invite a partner for {LOGO} from the list;\n"
+        f"Use 'Settings:Invite partner' if empty."
     )
 
     if contacts_qty != 0:
@@ -32,6 +32,6 @@ async def on_prepare_secure_talk(callback_query: types.CallbackQuery):
     else:
         invite_partner_keyboard = invite_button()
         await callback_query.message.answer(
-            f"No {LOGO} partners were found. Invite a one.",
+            f"No active {LOGO}s. Invite a partner.",
             reply_markup=invite_partner_keyboard,
         )
