@@ -22,13 +22,13 @@ async def on_invitee_button_click(
     callback_query: types.CallbackQuery,
     state: FSMContext,
 ):
-    """Invitee input processing after '🔒 @Username' button click."""
-    verifier = CallbackVerifier(callback_query, state, "inviter")
+    """Invitee input processing on '🔒 @Username' button click."""
+    verifier = CallbackVerifier(callback_query, state)
 
     try:
-        if not await verifier.verify(expected_prefix="ir:", params_count=5):
+        if not await verifier.verify(expected_prefix="ir:invite:", params_count=5):
             return
-        await verifier.update_state()
+        await verifier.update_conversation_state()
 
     except ValueError as e:
         msg = f"Callback verification failed: {e}"
@@ -37,15 +37,15 @@ async def on_invitee_button_click(
 
     await notify_key_received(verifier.inviter_id, verifier.secure_id)
 
-    invitee_callback_confirm_conversation_data = f"ie:{verifier.reference_id}"
-
+    invitee_callback_confirm_conversation_data = f"ie:accept:{verifier.reference_id}"
     confirm_start = confirm_button(invitee_callback_confirm_conversation_data)
+
     await bot.send_message(
         chat_id=verifier.invitee_id,
-        text=f"'{verifier.inviter_username}' is waiting for {LOGO} to be confirmed.",
+        text=f"@{verifier.inviter_username} is waiting for {LOGO} to be confirmed.",
         reply_markup=confirm_start,
     )
 
     await callback_query.message.answer(
-        f"Waiting for '{verifier.invitee_username}' {LOGO} confirmation...",
+        f"Waiting for @{verifier.invitee_username} confirmation..",
     )
