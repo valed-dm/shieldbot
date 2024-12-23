@@ -1,11 +1,18 @@
-import logging
+from __future__ import annotations
 
-from aiogram import types
-from aiogram.fsm.context import FSMContext
+import logging
+from typing import TYPE_CHECKING
+from typing import Any
 
 from bot.callbacks.data.redis_reference import get_callback_data
 from bot.core.state import FSMStateManager
 from bot.core.user_data_resolver import UserDataResolver
+from bot.keys.aes.sym_key import retrieve_symmetric_key
+from bot.keys.encrypt_decrypt import decrypt_message_with_aes
+
+if TYPE_CHECKING:
+    from aiogram import types
+    from aiogram.fsm.context import FSMContext
 
 logger = logging.getLogger(__name__)
 
@@ -15,23 +22,24 @@ class CallbackVerifier:
         self,
         callback_query: types.CallbackQuery,
         state: FSMContext,
-        role: str,
     ):
         """
         Initialize the verifier with a callback query and FSM state.
         """
         self.callback_query = callback_query
         self.state = state
-        self.role = role
         self.user_resolver = None  # Will be assigned dynamically
         self.callback_data = None
 
-        # Parameters initialized as None
+        # Conversation info parameters
+        self._role = None
+        self._action = None
         self._secure_id = None
         self._inviter_id = None
         self._inviter_username = None
         self._invitee_id = None
         self._invitee_username = None
+        # Callback reference id to get data from redis
         self._reference_id = None
 
     async def verify(self, expected_prefix: str, params_count: int) -> bool:
@@ -49,8 +57,14 @@ class CallbackVerifier:
 
         # Split callback data and extract the reference ID
         try:
-            _, self._reference_id = self.callback_query.data.split(":", maxsplit=1)
+            role_prefix, action, self._reference_id = self.callback_query.data.split(
+                ":",
+                maxsplit=3,
+            )
+            self._role = "inviter" if role_prefix == "ir" else "invitee"
+            self._action = action
             self.callback_data = await get_callback_data(self.reference_id)
+
         except ValueError:
             await self.callback_query.answer("❌ Invalid callback structure!")
             return False
@@ -65,20 +79,26 @@ class CallbackVerifier:
             await self.callback_query.answer(msg, show_alert=True)
             return False
 
-        self._extract_params()
+        if self._action in ("invite", "accept"):
+            self._extract_conversation_params()
+
         return True
 
-    def _extract_params(self) -> None:
+    def _extract_conversation_params(self) -> None:
         """
         Extract and validate parameters from the callback data.
         """
-        secure_id, inviter_id, inviter_username, invitee_id, invitee_username = (
-            self.callback_data.split(":")
-        )
+        (
+            secure_id,
+            inviter_id,
+            inviter_username,
+            invitee_id,
+            invitee_username,
+        ) = self.callback_data.split(":")
 
         self.user_resolver = UserDataResolver(self.callback_query)
 
-        comparison_id = inviter_id if self.role == "inviter" else invitee_id
+        comparison_id = inviter_id if self._role == "inviter" else invitee_id
         if str(self.user_resolver.id) != comparison_id:
             msg = "❌ User ID mismatch in callback data."
             raise ValueError(msg)
@@ -90,7 +110,7 @@ class CallbackVerifier:
         self._invitee_id = int(invitee_id)
         self._invitee_username = invitee_username
 
-    async def update_state(self) -> None:
+    async def update_conversation_state(self) -> None:
         """
         Update the FSM state with extracted parameters.
         """
@@ -99,9 +119,30 @@ class CallbackVerifier:
 
         fsm_manager.secure_id = self._secure_id
         fsm_manager.inviter_id = self._inviter_id
+        fsm_manager.inviter_username = self._inviter_username
         fsm_manager.invitee_id = self._invitee_id
+        fsm_manager.invitee_username = self._invitee_username
 
         await fsm_manager.save()
+
+    async def decrypt_text(self) -> tuple[str, Any]:
+        fsm_manager = FSMStateManager(self.state)
+        await fsm_manager.load()
+
+        symmetric_key = retrieve_symmetric_key(conversation_id=fsm_manager.secure_id)
+        iv_ciphertext = bytes.fromhex(self.callback_data)
+
+        decrypted_text = await decrypt_message_with_aes(
+            key=symmetric_key,
+            iv_ciphertext=iv_ciphertext,
+        )
+
+        return (
+            decrypted_text,
+            fsm_manager.inviter_username
+            if self._role == "inviter"
+            else fsm_manager.invitee_username,
+        )
 
     @property
     def secure_id(self) -> str:
