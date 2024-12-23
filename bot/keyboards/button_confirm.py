@@ -9,9 +9,9 @@ load_dotenv()
 LOGO = os.getenv("LOGO")
 
 
-def confirm_button(securetalk_data: str):
+def confirm_button(role_action_id: str):
     button = InlineKeyboardButton(
         text=f"✅{LOGO}",
-        callback_data=securetalk_data,
+        callback_data=role_action_id,
     )
     return InlineKeyboardMarkup(inline_keyboard=[[button]])
