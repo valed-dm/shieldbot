@@ -34,7 +34,7 @@ async def contacts_keyboard(
         InlineKeyboardButton(
             text=f"🔒 {contact['username']}",
             callback_data=await create_callback_data(
-                "ir:",
+                "ir:invite:",
                 contact["secure_id"],
                 inviter_id,
                 inviter_username,
