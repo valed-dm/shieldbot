@@ -70,18 +70,20 @@ async def on_invitee_text_input(
 
         await fsm_manager.save()
 
-        contacts, contacts_qty = await contacts_keyboard(inviter.id, inviter.username)
+        contacts, _ = await contacts_keyboard(inviter.id, inviter.username)
         await bot.send_message(
             inviter.id,
-            f"Press button {invitee.username} to start {LOGO} conversation",
+            f"Press button {invitee.username} to start {LOGO}!",
             reply_markup=contacts,
         )
         await bot.send_message(
             invitee.id,
-            f"Now waiting for {LOGO} with {inviter.username} to start",
+            f"Waiting for {LOGO} with {inviter.username}.",
         )
 
-        success_msg = f"{LOGO} dialog {inviter.username}/{invitee.username} initiated."
+        success_msg = (
+            f"{LOGO} dialog @{inviter.username}/@{invitee.username} initiated."
+        )
         logging.info(success_msg)
 
     else:
