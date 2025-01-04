@@ -13,7 +13,9 @@ class SecureTalkEncryptorHandler(BaseSecureTalkHandler):
     async def encrypt_message(self):
         await self.load_securetalk_state()
 
-        symmetric_key = retrieve_symmetric_key(conversation_id=self._secure_id)
+        symmetric_key = retrieve_symmetric_key(
+            conversation_id=self.secure_talk_data.secure_id,
+        )
 
         try:
             encrypted_text = await encrypt_message_with_aes(
@@ -23,20 +25,20 @@ class SecureTalkEncryptorHandler(BaseSecureTalkHandler):
             encrypted_hex = encrypted_text.hex()
 
             callback_data = await create_callback_data(
-                f"{self.recipient_prefix}:decrypt:",
+                f"{self.secure_talk_data.recipient_prefix}:decrypt:",
                 encrypted_hex,
             )
 
             decrypt_btn = decrypt_button(callback_data)
 
             await self.message.bot.send_message(
-                chat_id=self.recipient_id,
+                chat_id=self.secure_talk_data.recipient_id,
                 text=f"@{self.sender.username} 🔑{encrypted_hex[:10]}..",
                 reply_markup=decrypt_btn,
             )
             await self.message.reply(
                 f"@{self.sender.username} ciphered message to "
-                f"@{self.recipient_username} was sent securely!",
+                f"@{self.secure_talk_data.recipient_username} was sent securely!",
             )
 
         except Exception as e:
