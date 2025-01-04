@@ -4,16 +4,16 @@ from bot.callbacks.data.redis_reference import create_callback_data
 from bot.keyboards.button_decrypt import decrypt_button
 from bot.keys.aes.sym_key import retrieve_symmetric_key
 from bot.keys.encrypt_decrypt import encrypt_message_with_aes
-from bot.messages.handlers.base import BaseMessageHandler
+from bot.messages.handlers.base import BaseSecureTalkHandler
 
 logger = logging.getLogger("ENCRYPTOR_HANDLER")
 
 
-class SecureTalkEncryptorHandler(BaseMessageHandler):
+class SecureTalkEncryptorHandler(BaseSecureTalkHandler):
     async def encrypt_message(self):
         await self.load_securetalk_state()
 
-        symmetric_key = retrieve_symmetric_key(conversation_id=self.secure_id)
+        symmetric_key = retrieve_symmetric_key(conversation_id=self._secure_id)
 
         try:
             encrypted_text = await encrypt_message_with_aes(
