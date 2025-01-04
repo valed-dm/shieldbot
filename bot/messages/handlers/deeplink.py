@@ -1,14 +1,14 @@
 import logging
 
 from bot.keyboards.inviter_contacts_keyboard import contacts_keyboard
-from bot.messages.handlers.base import BaseMessageHandler
+from bot.messages.handlers.base import BaseSecureTalkHandler
 from bot.utils.invitee.resolve_invitation import resolve_invitation
 from bot.utils.invitee.store_invitee import store_invitee
 
 logger = logging.getLogger("DEEP_LINK_HANDLER")
 
 
-class DeepLinkHandler(BaseMessageHandler):
+class DeepLinkHandler(BaseSecureTalkHandler):
     async def message_controller(self):
         """Check for a '/start' command with a deep link invitation."""
         if len(self.text.split()) > 1:
@@ -25,14 +25,14 @@ class DeepLinkHandler(BaseMessageHandler):
 
     async def resolve_deeplink(self):
         """Verify and process a deep link invitation."""
-        self.secure_id = self.text.split()[1]
+        self._secure_id = self.text.split()[1]
 
         info_msg = f"{self.logo} Invitation from @{self.sender.username} received."
         logger.info(info_msg)
 
         try:
-            self.inviter_id, self.inviter_username = await resolve_invitation(
-                self.secure_id,
+            self._inviter_id, self._inviter_username = await resolve_invitation(
+                self._secure_id,
                 self.sender.id,
             )
         except Exception as e:
@@ -46,35 +46,35 @@ class DeepLinkHandler(BaseMessageHandler):
 
     async def store_invitation(self):
         """Store invitee and initialize FSM state."""
-        if not self.inviter_id:
+        if not self._inviter_id:
             error_msg = "Inviter ID is missing after invitation resolution."
             raise ValueError(error_msg)
 
-        self.invitee_id = self.sender.id
+        self._invitee_id = self.sender.id
 
-        await store_invitee(self.secure_id, self.sender)
+        await store_invitee(self._secure_id, self.sender)
 
     async def send_notifications(self):
         """Send notifications to inviter and invitee."""
-        if not self.inviter_id or not self.inviter_username:
+        if not self._inviter_id or not self._inviter_username:
             error_msg = "Incomplete inviter data for notification."
             raise ValueError(error_msg)
 
         contacts, _ = await contacts_keyboard(
-            int(self.inviter_id),
-            self.inviter_username,
+            int(self._inviter_id),
+            self._inviter_username,
         )
         await self.bot_instance.send_message(
-            self.inviter_id,
+            self._inviter_id,
             f"Press button '🔒 {self.sender.username}' to start {self.logo}.",
             reply_markup=contacts,
         )
         await self.bot_instance.send_message(
             self.sender.id,
-            f"Now waiting for {self.logo} with @{self.inviter_username} to start.",
+            f"Now waiting for {self.logo} with @{self._inviter_username} to start.",
         )
         info_msg = (
-            f"{self.logo} @{self.inviter_username} invitation resolved successfully: "
+            f"{self.logo} @{self._inviter_username} invitation resolved successfully: "
             f"{self.sender.id}:@{self.sender.username}"
         )
         logger.info(info_msg)
