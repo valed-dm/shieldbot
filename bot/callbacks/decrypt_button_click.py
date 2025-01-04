@@ -2,11 +2,8 @@ import logging
 
 from aiogram import types
 from aiogram.fsm.context import FSMContext
-from dotenv import load_dotenv
 
 from bot.callbacks.data.callback_verify import CallbackVerifier
-
-load_dotenv()
 
 logger = logging.getLogger("DECRYPT_BUTTON")
 
