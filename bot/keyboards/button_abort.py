@@ -1,0 +1,17 @@
+import os
+
+from aiogram.types import InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup
+from dotenv import load_dotenv
+
+load_dotenv()
+
+LOGO = os.getenv("LOGO")
+
+
+def abort_button(role_action_id: str):
+    button = InlineKeyboardButton(
+        text=f"❌Abort {LOGO}",
+        callback_data=role_action_id,
+    )
+    return InlineKeyboardMarkup(inline_keyboard=[[button]])
