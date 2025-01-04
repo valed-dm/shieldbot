@@ -4,6 +4,7 @@ from aiogram import Router
 from aiogram.filters import Filter
 from aiogram.types import CallbackQuery
 
+from bot.callbacks.abort_button_click import on_abort_button_click
 from bot.callbacks.decrypt_button_click import on_decrypt_button_click
 from bot.callbacks.invitee.confirm_button_click import on_confirm_button_click
 from bot.callbacks.invitee.invitee_button_input import on_invitee_button_click
@@ -22,6 +23,8 @@ CALLBACK_ACCEPT_INVITATION = "ie:accept:"
 CALLBACK_RESET_INVITEES = "ir:reset:"
 CALLBACK_INVITER_DECRYPT = "ir:decrypt:"
 CALLBACK_INVITEE_DECRYPT = "ie:decrypt:"
+CALLBACK_INVITER_ABORT = "ir:abort:"
+CALLBACK_INVITEE_ABORT = "ie:abort:"
 
 router = Router(name=__name__)
 
@@ -69,4 +72,12 @@ router.callback_query.register(
 router.callback_query.register(
     partial(on_decrypt_button_click, expected_prefix="ie:decrypt:"),
     lambda c: c.data and c.data.startswith(CALLBACK_INVITEE_DECRYPT),
+)
+router.callback_query.register(
+    partial(on_abort_button_click, expected_prefix="ir:abort:"),
+    lambda c: c.data and c.data.startswith(CALLBACK_INVITER_ABORT),
+)
+router.callback_query.register(
+    partial(on_abort_button_click, expected_prefix="ie:abort:"),
+    lambda c: c.data and c.data.startswith(CALLBACK_INVITEE_ABORT),
 )
