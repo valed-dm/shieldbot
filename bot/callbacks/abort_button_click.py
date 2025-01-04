@@ -5,13 +5,16 @@ from aiogram import types
 from aiogram.fsm.context import FSMContext
 from dotenv import load_dotenv
 
-from bot.callbacks.data.callback_verify import CallbackVerifier
+from bot.callbacks.data.callback_controller import CallbackController
+from bot.core.bot_instance import get_bot_instance
 
 load_dotenv()
 
 logger = logging.getLogger("CLOSE_BUTTON")
 
 LOGO = os.getenv("LOGO")
+
+bot = get_bot_instance()
 
 
 async def on_abort_button_click(
@@ -20,14 +23,17 @@ async def on_abort_button_click(
     expected_prefix: str,
 ):
     """Handle 'Abort SecureTalk' button clicks for both inviter and invitee."""
-    verifier = CallbackVerifier(callback_query, state)
+    callback = CallbackController(callback_query, state, bot)
     inviter_username = ""
     invitee_username = ""
 
     try:
-        if not await verifier.verify(expected_prefix=expected_prefix, params_count=1):
+        if not await callback.callback_controller(
+            expected_prefix=expected_prefix,
+            params_count=1,
+        ):
             return
-        inviter_username, invitee_username = await verifier.abort_conversation_state()
+        inviter_username, invitee_username = await callback.abort_securetalk_state()
 
     except ValueError as e:
         msg = f"Callback verification failed: {e}"
