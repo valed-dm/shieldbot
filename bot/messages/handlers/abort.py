@@ -8,12 +8,12 @@ class AbortCommandHandler(BaseSecureTalkHandler):
         await self.load_securetalk_state()
 
         recipient_close_callback_data = await create_callback_data(
-            f"{self.recipient_prefix}:abort:",
-            self._secure_id,
+            f"{self.secure_talk_data.recipient_prefix}:abort:",
+            self.secure_talk_data.secure_id,
         )
         sender_close_callback_data = await create_callback_data(
-            f"{self.sender_prefix}:abort:",
-            self._secure_id,
+            f"{self.secure_talk_data.sender_prefix}:abort:",
+            self.secure_talk_data.secure_id,
         )
 
         recipient_close_btn = abort_button(recipient_close_callback_data)
@@ -21,7 +21,7 @@ class AbortCommandHandler(BaseSecureTalkHandler):
 
         abort_message = f"Abort {self.logo}?"
         await self.message.bot.send_message(
-            chat_id=self.recipient_id,
+            chat_id=self.secure_talk_data.recipient_id,
             text=abort_message,
             reply_markup=recipient_close_btn,
         )
