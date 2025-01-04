@@ -5,7 +5,7 @@ from aiogram import types
 from aiogram.fsm.context import FSMContext
 from dotenv import load_dotenv
 
-from bot.callbacks.data.callback_verify import CallbackVerifier
+from bot.callbacks.data.callback_controller import CallbackController
 from bot.core.bot_instance import get_bot_instance
 from bot.keyboards.button_confirm import confirm_button
 from bot.keys.exchange.key_status import notify_key_received
@@ -23,29 +23,32 @@ async def on_invitee_button_click(
     state: FSMContext,
 ):
     """Invitee input processing on '🔒 @Username' button click."""
-    verifier = CallbackVerifier(callback_query, state)
+    callback = CallbackController(callback_query, state, bot)
 
     try:
-        if not await verifier.verify(expected_prefix="ir:invite:", params_count=5):
+        if not await callback.callback_controller(
+            expected_prefix="ir:invite:",
+            params_count=5,
+        ):
             return
-        await verifier.update_conversation_state()
+        await callback.set_securetalk_state()
 
     except ValueError as e:
         msg = f"Callback verification failed: {e}"
         logger.exception(msg)
         await callback_query.answer(str(e), show_alert=True)
 
-    await notify_key_received(verifier.inviter_id, verifier.secure_id)
+    await notify_key_received(callback.inviter_id, callback.secure_id)
 
-    invitee_callback_confirm_conversation_data = f"ie:accept:{verifier.reference_id}"
+    invitee_callback_confirm_conversation_data = f"ie:accept:{callback.reference_id}"
     confirm_start = confirm_button(invitee_callback_confirm_conversation_data)
 
     await bot.send_message(
-        chat_id=verifier.invitee_id,
-        text=f"@{verifier.inviter_username} is waiting for {LOGO} to be confirmed.",
+        chat_id=callback.invitee_id,
+        text=f"@{callback.inviter_username} is waiting for {LOGO} to be confirmed.",
         reply_markup=confirm_start,
     )
 
     await callback_query.message.answer(
-        f"Waiting for @{verifier.invitee_username} confirmation..",
+        f"Waiting for @{callback.invitee_username} confirmation..",
     )
