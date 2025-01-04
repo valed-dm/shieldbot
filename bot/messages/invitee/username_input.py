@@ -11,7 +11,7 @@ from bot.core.redis_client import get_redis_client
 from bot.core.state import FSMStateManager
 from bot.core.user_data_resolver import UserDataResolver
 from bot.keyboards.inviter_contacts_keyboard import contacts_keyboard
-from bot.messages.invitee.invitee_deeplink import invitation_link_created_message
+from bot.messages.invitee.deeplink_builder import invitation_link_created_message
 from bot.utils.invitee.resolve_invitee import resolve_invitee
 
 if TYPE_CHECKING:
@@ -25,12 +25,13 @@ redis_client = get_redis_client()
 LOGO = os.getenv("LOGO")
 
 
-async def on_invitee_text_input(
+async def on_username_input(
     message: types.Message,
     state: FSMContext,
 ) -> None:
     """Manual invitee's username input processing."""
     input_text = message.text.strip()
+    inviter = UserDataResolver(message)
     result = await resolve_invitee(message=message, username=input_text)
 
     if result["success"] == "link_ready":
@@ -40,15 +41,13 @@ async def on_invitee_text_input(
             message=message,
             deep_link_text=result["message"],
         )
-        inviter = message.from_user.username
-        msg = f"{inviter} prepared invitation {LOGO} link for {input_text}"
+        msg = f"{inviter.username} prepared invitation {LOGO} link for {input_text}"
         logging.info(msg)
 
     elif result["success"]:
         await state.clear()
 
         secure_id = ""
-        inviter = UserDataResolver(message)
         invitee = result["invitee"]
 
         conversations = await redis_client.smembers(
