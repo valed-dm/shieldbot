@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from aiogram import types
@@ -17,6 +18,20 @@ if TYPE_CHECKING:
 load_dotenv()
 
 LOGO = os.getenv("LOGO")
+
+
+@dataclass
+class SecureTalkData:
+    secure_id: str = None
+    inviter_id: str = None
+    inviter_username: str = None
+    invitee_id: str = None
+    invitee_username: str = None
+    sender_prefix: str = None
+    recipient_username: str = None
+    recipient_id: str = None
+    recipient_role: str = None
+    recipient_prefix: str = None
 
 
 class BaseSecureTalkHandler:
@@ -38,17 +53,8 @@ class BaseSecureTalkHandler:
         self.text = self.message.text if self.message else None
         self.state = state
         self.logo = logo
-        self._secure_id = None
-        self._inviter_id = None
-        self._inviter_username = None
-        self._invitee_id = None
-        self._invitee_username = None
         self.sender = UserDataResolver(incoming_data)
-        self.sender_prefix = None
-        self.recipient_username = None
-        self.recipient_id = None
-        self.recipient_role = None
-        self.recipient_prefix = None
+        self.secure_talk_data = SecureTalkData()
 
     async def message_controller(self):
         """Default verification logic."""
@@ -68,11 +74,11 @@ class BaseSecureTalkHandler:
             raise ValueError(error_msg)
 
         attributes_map: dict[str, str] = {
-            "secure_id": "_secure_id",
-            "inviter_id": "_inviter_id",
-            "inviter_username": "_inviter_username",
-            "invitee_id": "_invitee_id",
-            "invitee_username": "_invitee_username",
+            "secure_id": "secure_id",
+            "inviter_id": "inviter_id",
+            "inviter_username": "inviter_username",
+            "invitee_id": "invitee_id",
+            "invitee_username": "invitee_username",
             "sender_prefix": "sender_prefix",
             "recipient_username": "recipient_username",
             "recipient_id": "recipient_id",
@@ -83,11 +89,19 @@ class BaseSecureTalkHandler:
         fsm_manager = FSMStateManager(self.state)
         await fsm_manager.load()
 
-        for fsm_attr, instance_attr in attributes_map.items():
+        for fsm_attr, secure_talk_attr in attributes_map.items():
             if mode == "load":
-                setattr(self, instance_attr, getattr(fsm_manager, fsm_attr))
+                setattr(
+                    self.secure_talk_data,
+                    secure_talk_attr,
+                    getattr(fsm_manager, fsm_attr),
+                )
             elif mode == "set":
-                setattr(fsm_manager, fsm_attr, getattr(self, instance_attr))
+                setattr(
+                    fsm_manager,
+                    fsm_attr,
+                    getattr(self.secure_talk_data, secure_talk_attr),
+                )
 
         await fsm_manager.save()
 
