@@ -1,19 +1,19 @@
 from bot.callbacks.data.redis_reference import create_callback_data
 from bot.keyboards.button_abort import abort_button
-from bot.messages.handlers.base import BaseMessageHandler
+from bot.messages.handlers.base import BaseSecureTalkHandler
 
 
-class AbortCommandHandler(BaseMessageHandler):
+class AbortCommandHandler(BaseSecureTalkHandler):
     async def abort_command(self):
         await self.load_securetalk_state()
 
         recipient_close_callback_data = await create_callback_data(
             f"{self.recipient_prefix}:abort:",
-            self.secure_id,
+            self._secure_id,
         )
         sender_close_callback_data = await create_callback_data(
             f"{self.sender_prefix}:abort:",
-            self.secure_id,
+            self._secure_id,
         )
 
         recipient_close_btn = abort_button(recipient_close_callback_data)
