@@ -125,6 +125,21 @@ class CallbackVerifier:
 
         await fsm_manager.save()
 
+    async def abort_conversation_state(self) -> tuple[str, str]:
+        """
+        Reset the FSM state.
+        """
+        fsm_manager = FSMStateManager(self.state)
+        await fsm_manager.load()
+
+        inviter_username = fsm_manager.inviter_username
+        invitee_username = fsm_manager.invitee_username
+
+        await fsm_manager.clear()
+        await fsm_manager.save()
+
+        return inviter_username, invitee_username
+
     async def decrypt_text(self) -> tuple[str, Any]:
         fsm_manager = FSMStateManager(self.state)
         await fsm_manager.load()
@@ -140,7 +155,7 @@ class CallbackVerifier:
         return (
             decrypted_text,
             fsm_manager.inviter_username
-            if self._role == "inviter"
+            if self._role == "invitee"
             else fsm_manager.invitee_username,
         )
 
@@ -167,3 +182,7 @@ class CallbackVerifier:
     @property
     def reference_id(self) -> str:
         return self._reference_id
+
+    @property
+    def role(self) -> str:
+        return self._role
