@@ -5,6 +5,7 @@ from aiogram.fsm.storage.memory import MemoryStorage
 
 from bot.callbacks.callbacks import router as callbacks_router
 from bot.core.bot_instance import get_bot_instance
+from bot.core.redis_client import close_redis_client
 from bot.core.redis_client import get_redis_client
 from bot.messages.messages import router as messages_router
 
@@ -22,7 +23,7 @@ dp = Dispatcher(storage=MemoryStorage())
 
 async def on_shutdown():
     """Shutdown tasks."""
-    await redis_client.aclose()
+    await close_redis_client()
     logger.info("Shutting down redis connection")
     await bot.session.close()
     logger.info("Bot session closed.")
