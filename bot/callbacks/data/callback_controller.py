@@ -17,20 +17,48 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class CallbackData:
+    """
+    Represents the callback data structure.
+
+    Attributes:
+        role (str): The role of the user in the callback context, e.g.,
+        'inviter' or 'invitee'.
+        action (str): The action to be performed, extracted from the callback data.
+        reference_id (str): The reference ID for retrieving data from Redis.
+    """
+
     role: str = None
     action: str = None
     reference_id: str = None  # Callback reference id to get data from redis
 
 
 class CallbackController(BaseSecureTalkHandler):
+    """
+    Controller for handling callback queries in a secure talk system.
+
+    Attributes:
+        raw_data (types.Message | types.CallbackQuery): The raw data from the callback.
+        state (FSMContext): The FSM state for managing bot states.
+        bot (Bot): The bot instance for interacting with Telegram API.
+        attrs (CallbackData): Holds the parsed callback data.
+    """
+
     def __init__(
         self,
         raw_data: types.Message | types.CallbackQuery,
         state: FSMContext,
         bot: Bot,
     ):
-        """Initialize the CallbackController with a CallbackQuery,
-        FSM state and Bot instance."""
+        """
+        Initialize the CallbackController with a CallbackQuery, FSM state, and Bot
+        instance.
+
+        Args:
+            raw_data (types.Message | types.CallbackQuery): Incoming data from the
+            callback.
+            state (FSMContext): Current state of the FSM for managing session state.
+            bot (Bot): Instance of the bot for API interactions.
+        """
         super().__init__(raw_data, state, bot)
         self.attrs = CallbackData()
 
@@ -42,9 +70,12 @@ class CallbackController(BaseSecureTalkHandler):
         """
         Perform the callback handling process.
 
-        :param expected_prefix: The prefix that the callback data must start with.
-        :param params_count: The expected number of parameters in the callback data.
-        :return: True if verification is successful, False otherwise.
+        Args:
+            expected_prefix (str): The prefix that the callback data must start with.
+            params_count (int): The expected number of parameters in the callback data.
+
+        Returns:
+            bool: True if the callback is valid, False otherwise.
         """
         # Validate callback data prefix
         if not self.callback_query.data.startswith(expected_prefix):
@@ -85,6 +116,10 @@ class CallbackController(BaseSecureTalkHandler):
     def _extract_conversation_params(self) -> None:
         """
         Extract and validate parameters from the callback data.
+
+        Raises:
+            ValueError: If the user ID in the callback data does not match the
+            sender's ID.
         """
         (
             secure_id,
@@ -108,28 +143,36 @@ class CallbackController(BaseSecureTalkHandler):
 
     @property
     def secure_id(self) -> str:
+        """str: Secure ID associated with the callback data."""
         return self.secure_talk_data.secure_id
 
     @property
     def inviter_id(self) -> int:
+        """int: The ID of the inviter in the conversation."""
         return self.secure_talk_data.inviter_id
 
     @property
     def inviter_username(self) -> str:
+        """str: The username of the inviter in the conversation."""
         return self.secure_talk_data.inviter_username
 
     @property
     def invitee_id(self) -> int:
+        """int: The ID of the invitee in the conversation."""
         return self.secure_talk_data.invitee_id
 
     @property
     def invitee_username(self) -> str:
+        """str: The username of the invitee in the conversation."""
         return self.secure_talk_data.invitee_username
 
     @property
     def reference_id(self) -> str:
+        """str: The redis storage reference ID extracted from the callback data."""
         return self.attrs.reference_id
 
     @property
     def role(self) -> str:
+        """str: The role of the user in the conversation, e.g.,
+        'inviter' or 'invitee'."""
         return self.attrs.role
