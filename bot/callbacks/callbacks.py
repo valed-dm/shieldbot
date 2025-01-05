@@ -7,9 +7,11 @@ from aiogram.types import CallbackQuery
 from bot.callbacks.abort_button_click import on_abort_button_click
 from bot.callbacks.decrypt_button_click import on_decrypt_button_click
 from bot.callbacks.invitee.confirm_button_click import on_confirm_button_click
+from bot.callbacks.invitee.decline_button_click import on_decline_button_click
 from bot.callbacks.invitee.invitee_button_input import on_invitee_button_click
 from bot.callbacks.invitee.invitee_manual_input import on_manual_invitee_input
 from bot.callbacks.invitee.invitees_reset import on_reset_invitees
+from bot.callbacks.inviter.cancel_button_click import on_cancel_button_click
 from bot.commands.help import help_callback
 from bot.commands.securetalk import on_prepare_secure_talk
 from bot.commands.settings import on_settings
@@ -20,6 +22,8 @@ CALLBACK_PREPARE_SECURETALK = "ir:prepare:"
 CALLBACK_MANUAL_INVITEE_INPUT = "ie:input:"
 CALLBACK_SAVED_INVITEE_INPUT = "ir:invite:"
 CALLBACK_ACCEPT_INVITATION = "ie:accept:"
+CALLBACK_DECLINE_INVITATION = "ie:decline:"
+CALLBACK_CANCEL_INVITATION = "ir:cancel:"
 CALLBACK_RESET_INVITEES = "ir:reset:"
 CALLBACK_INVITER_DECRYPT = "ir:decrypt:"
 CALLBACK_INVITEE_DECRYPT = "ie:decrypt:"
@@ -64,6 +68,14 @@ router.callback_query.register(
 router.callback_query.register(
     on_confirm_button_click,
     lambda c: c.data and c.data.startswith(CALLBACK_ACCEPT_INVITATION),
+)
+router.callback_query.register(
+    on_decline_button_click,
+    lambda c: c.data and c.data.startswith(CALLBACK_DECLINE_INVITATION),
+)
+router.callback_query.register(
+    on_cancel_button_click,
+    lambda c: c.data and c.data.startswith(CALLBACK_CANCEL_INVITATION),
 )
 router.callback_query.register(
     partial(on_decrypt_button_click, expected_prefix="ir:decrypt:"),
