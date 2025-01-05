@@ -29,9 +29,8 @@ class CallbackController(BaseSecureTalkHandler):
         state: FSMContext,
         bot: Bot,
     ):
-        """
-        Initialize the verifier with a callback query and FSM state.
-        """
+        """Initialize the CallbackController with a CallbackQuery,
+        FSM state and Bot instance."""
         super().__init__(raw_data, state, bot)
         self.attrs = CallbackData()
 
@@ -41,7 +40,7 @@ class CallbackController(BaseSecureTalkHandler):
         params_count: int,
     ) -> bool:
         """
-        Perform the callback verification process.
+        Perform the callback handling process.
 
         :param expected_prefix: The prefix that the callback data must start with.
         :param params_count: The expected number of parameters in the callback data.
@@ -78,7 +77,7 @@ class CallbackController(BaseSecureTalkHandler):
             await self.callback_query.answer(msg, show_alert=True)
             return False
 
-        if self.attrs.action in ("invite", "accept"):
+        if self.attrs.action in ("invite", "accept", "decline"):
             self._extract_conversation_params()
 
         return True
