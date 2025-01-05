@@ -19,8 +19,23 @@ LOGO = os.getenv("LOGO")
 async def on_confirm_button_click(
     callback_query: types.CallbackQuery,
     state: FSMContext,
-):
-    """Invitee state updating on 'Confirm' button click."""
+) -> None:
+    """
+    Handles the 'Confirm' button click event for an invitee.
+
+    This function verifies and processes callback data for the invitee's confirmation
+    action. If the callback data verification passes, it updates the invitee's
+    SecureTalk state and sends notifications to both the inviter and invitee.
+
+    :param callback_query: The callback query triggered by the 'Confirm' button.
+    :type callback_query: types.CallbackQuery
+    :param state: The current finite state machine (FSM) context.
+    :type state: FSMContext
+
+    :raises ValueError: If callback data verification fails.
+
+    :return: None
+    """
     callback = CallbackController(callback_query, state, bot)
 
     try:
