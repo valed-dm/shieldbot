@@ -4,7 +4,7 @@ import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
-from bot.callbacks.data.redis_reference import get_callback_data
+from bot.callbacks.data.redis_callback_data import get_callback_data
 from bot.messages.handlers.base import BaseSecureTalkHandler
 
 if TYPE_CHECKING:

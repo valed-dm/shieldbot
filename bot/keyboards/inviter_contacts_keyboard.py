@@ -3,7 +3,7 @@ from __future__ import annotations
 from aiogram.types import InlineKeyboardButton
 from aiogram.types import InlineKeyboardMarkup
 
-from bot.callbacks.data.redis_reference import create_callback_data
+from bot.callbacks.data.redis_callback_data import create_callback_data
 from bot.core.bot_instance import get_bot_instance
 from bot.core.redis_client import get_redis_client
 from bot.utils.dynamic_keyboard import dynamic_keyboard

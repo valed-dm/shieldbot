@@ -1,4 +1,4 @@
-from bot.callbacks.data.redis_reference import create_callback_data
+from bot.callbacks.data.redis_callback_data import create_callback_data
 from bot.keyboards.button_abort import abort_button
 from bot.messages.handlers.base import BaseSecureTalkHandler
 

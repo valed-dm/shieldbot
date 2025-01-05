@@ -1,6 +1,6 @@
 import logging
 
-from bot.callbacks.data.redis_reference import create_callback_data
+from bot.callbacks.data.redis_callback_data import create_callback_data
 from bot.keyboards.button_decrypt import decrypt_button
 from bot.keys.aes.sym_key import retrieve_symmetric_key
 from bot.keys.encrypt_decrypt import encrypt_message_with_aes
