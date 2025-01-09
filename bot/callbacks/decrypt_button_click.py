@@ -1,3 +1,5 @@
+"""Abort button click callback handler."""
+
 import logging
 
 from aiogram import types
@@ -17,7 +19,35 @@ async def on_decrypt_button_click(
     state: FSMContext,
     expected_prefix: str,
 ):
-    """Handle 'SecureTalk Decrypt' button clicks for both inviter and invitee."""
+    """
+    Handle 'SecureTalk Decrypt' button clicks for both inviter and invitee.
+
+    This function processes the decryption workflow triggered by the 'Decrypt' button.
+    It verifies the callback data, loads the required SecureTalk state, decrypts the
+    secure message, and sends the decrypted text back to the user.
+
+    :param callback_query: The callback query object triggered by the button click.
+    :type callback_query: types.CallbackQuery
+    :param state: The FSM context for storing and retrieving state data.
+    :type state: FSMContext
+    :param expected_prefix: The expected prefix for the callback to verify its validity.
+    :type expected_prefix: str
+
+    :raises ValueError: If the callback verification fails or the data is invalid.
+
+    Workflow:
+        1. Validates the callback data against the expected prefix.
+        2. Loads the SecureTalk state to retrieve encryption-related details.
+        3. Decrypts the secure message and identifies the sender.
+        4. Sends the decrypted message to the user who triggered the callback.
+
+    Example response to the user:
+        `@sender: Decrypted message content`
+
+    Error Handling:
+        - If the callback data is invalid or verification fails, logs the exception
+          and displays an alert to the user with the relevant error message.
+    """
     callback = CallbackController(callback_query, state, bot)
     decrypted_text = ""
     sender = ""
