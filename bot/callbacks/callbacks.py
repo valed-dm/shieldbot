@@ -14,8 +14,8 @@ from bot.callbacks.invitee.invitee_button_input import on_invitee_button_click
 from bot.callbacks.invitee.invitee_manual_input import on_manual_invitee_input
 from bot.callbacks.invitee.invitees_reset import on_reset_invitees
 from bot.callbacks.inviter.cancel_button_click import on_cancel_button_click
+from bot.callbacks.inviter.securetalk import on_prepare_secure_talk
 from bot.commands.help import help_callback
-from bot.commands.securetalk import on_prepare_secure_talk
 from bot.commands.settings import on_settings
 
 CALLBACK_HELP = "help"
