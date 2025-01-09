@@ -1,3 +1,5 @@
+"""Abort button click callback handler."""
+
 import logging
 import os
 
@@ -10,7 +12,7 @@ from bot.core.bot_instance import get_bot_instance
 
 load_dotenv()
 
-logger = logging.getLogger("CLOSE_BUTTON")
+logger = logging.getLogger("ABORT_BUTTON")
 
 LOGO = os.getenv("LOGO")
 
@@ -22,7 +24,26 @@ async def on_abort_button_click(
     state: FSMContext,
     expected_prefix: str,
 ):
-    """Handle 'Abort SecureTalk' button clicks for both inviter and invitee."""
+    """
+    Handles 'Abort SecureTalk' button clicks for both inviter and invitee.
+
+    This function verifies the callback data, aborts the SecureTalk state, and
+    notifies the user about the abortion with an appropriate message.
+
+    :param callback_query: The callback query triggered by the abort button.
+    :type callback_query: types.CallbackQuery
+    :param state: The FSMContext to manage and retrieve conversation states.
+    :type state: FSMContext
+    :param expected_prefix: The expected prefix for the callback data to
+                               validate its structure.
+    :type expected_prefix: str
+
+    :raises ValueError: If the callback verification fails, a descriptive error
+                           is logged, and the user is notified via an alert.
+
+    :return: None
+    """
+
     callback = CallbackController(callback_query, state, bot)
     inviter_username = ""
     invitee_username = ""
