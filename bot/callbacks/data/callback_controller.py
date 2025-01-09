@@ -94,14 +94,20 @@ class CallbackController(BaseSecureTalkHandler):
             )
             self.attrs.role = "inviter" if role_prefix == "ir" else "invitee"
             self.attrs.action = action
-            self.callback_data = await get_callback_data(self.attrs.reference_id)
+            if self.attrs.reference_id:
+                # Retrieve full data from Redis
+                self.callback_data = await get_callback_data(self.attrs.reference_id)
 
         except ValueError:
             await self.callback_query.answer("❌ Invalid callback structure!")
             return False
 
-        # Validate callback data length
-        if len(self.callback_data.split(":")) != params_count:
+        # Validate callback data string format
+        if (
+            self.reference_id
+            and self.callback_data
+            and len(self.callback_data.split(":")) != params_count
+        ):
             msg = (
                 f"❌ Invalid callback data format: "
                 f"{len(self.callback_data.split(':'))} != {params_count}."
