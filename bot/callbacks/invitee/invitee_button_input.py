@@ -1,3 +1,5 @@
+"""Invitee button click callback handler."""
+
 import logging
 import os
 
@@ -24,7 +26,25 @@ async def on_invitee_button_click(
     callback_query: types.CallbackQuery,
     state: FSMContext,
 ):
-    """Invitation keyboard forwarding workflow after '🔒 @Username' button click."""
+    """
+    Handles the '🔒 @Username' button click event for the inviter.
+
+    This function manages the invitation forwarding workflow by:
+    - Verifying the callback data.
+    - Setting the SecureTalk state for the inviter.
+    - Notifying the inviter that the key has been received.
+    - Sending a confirmation keyboard to the invitee for accepting or declining the
+    invitation.
+
+    :param callback_query: The callback query triggered by the '🔒 @Username' button.
+    :type callback_query: types.CallbackQuery
+    :param state: The current finite state machine (FSM) context.
+    :type state: FSMContext
+
+    :raises ValueError: If callback data verification fails.
+
+    :return: None
+    """
     callback = CallbackController(callback_query, state, bot)
 
     try:
