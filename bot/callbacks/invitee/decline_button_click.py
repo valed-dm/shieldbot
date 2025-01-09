@@ -1,4 +1,4 @@
-"""Decline button click callback handler"""
+"""Decline button click callback handler."""
 
 import logging
 import os

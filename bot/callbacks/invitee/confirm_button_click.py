@@ -1,3 +1,5 @@
+"""Confirm button click callback handler."""
+
 import logging
 import os
 
