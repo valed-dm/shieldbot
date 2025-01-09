@@ -1,3 +1,5 @@
+"""Decline button click callback handler"""
+
 import logging
 import os
 
@@ -21,8 +23,24 @@ async def on_decline_button_click(
     callback_query: types.CallbackQuery,
     state: FSMContext,
 ):
-    """Drop SecureTalk data prepared on invitee's side
-    to default empty state on 'Decline' button click."""
+    """
+    Handles the 'Decline' button click event for an invitee.
+
+    This function processes the invitee's decision to decline an invitation by:
+    - Verifying callback data.
+    - Resetting the SecureTalk state on the invitee's side.
+    - Notifying the inviter about the declined invitation.
+    - Providing the inviter with an option to cancel the SecureTalk session.
+
+    :param callback_query: The callback query triggered by the 'Decline' button.
+    :type callback_query: types.CallbackQuery
+    :param state: The current finite state machine (FSM) context.
+    :type state: FSMContext
+
+    :raises ValueError: If callback data verification fails.
+
+    :return: None
+    """
     callback = CallbackController(callback_query, state, bot)
 
     try:
