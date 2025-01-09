@@ -1,4 +1,4 @@
-"""Module initiates manual invitee's username input"""
+"""Callback to initiate manual invitee's username input state"""
 
 from aiogram import types
 from aiogram.fsm.context import FSMContext
