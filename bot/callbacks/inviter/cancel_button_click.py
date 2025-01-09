@@ -1,3 +1,5 @@
+"""Cancel button click callback handler."""
+
 import logging
 import os
 
@@ -20,8 +22,22 @@ async def on_cancel_button_click(
     callback_query: types.CallbackQuery,
     state: FSMContext,
 ):
-    """Drop SecureTalk data prepared on inviter's side
-    to default empty state on 'Cancel' button click."""
+    """
+    Handles 'Cancel' button clicks to reset SecureTalk data on the inviter's side.
+
+    This function verifies the callback data, clears the SecureTalk state prepared
+    on the inviter's side, and notifies the user about the cancellation.
+
+    :param callback_query: The callback query triggered by the 'Cancel' button.
+    :type callback_query: types.CallbackQuery
+    :param state: The FSMContext to manage and reset the conversation state.
+    :type state: FSMContext
+
+    :raises ValueError: If the callback verification fails, logs the error
+                            and notifies the user via an alert.
+
+    :return: None
+    """
     callback = CallbackController(callback_query, state, bot)
 
     try:
