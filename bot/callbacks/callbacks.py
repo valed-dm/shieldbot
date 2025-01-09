@@ -1,3 +1,5 @@
+"""Callbacks registration module."""
+
 from functools import partial
 
 from aiogram import Router
@@ -34,10 +36,34 @@ router = Router(name=__name__)
 
 
 class CallbackFilter(Filter):
+    """
+    Custom filter for callback queries based on matching specific callback data.
+
+    This filter is designed to compare the callback data in a query with a
+    predefined text value (`my_text`). It is useful for handling specific
+    callback actions in Telegram bots.
+
+    :param my_text: The callback data to match against.
+    :type my_text: str
+    """
+
     def __init__(self, my_text: str) -> None:
+        """
+        Initializes the filter with the specified callback data to match.
+
+        :param my_text: The callback data to be matched.
+        """
         self.my_text = my_text
 
     async def __call__(self, callback_query: CallbackQuery) -> bool:
+        """
+        Compares the callback data in the query with the specified text.
+
+        :param callback_query: The callback query object to evaluate.
+        :type callback_query: CallbackQuery
+        :return: True if the callback data matches `my_text`, False otherwise.
+        :rtype: bool
+        """
         return callback_query.data == self.my_text
 
 
