@@ -1,3 +1,5 @@
+"""Callback data Redis storage."""
+
 import hashlib
 import logging
 
