@@ -28,3 +28,24 @@ whether in personal or professional messaging.
 
     Set up ShieldBot locally or deploy it using Docker.
     Contribute your ideas and improvements via pull requests.
+
+[<img src="docs/images/img_01.png" width="200"/>]()
+[<img src="docs/images/img_02.png" width="200"/>]()
+[<img src="docs/images/img_03.png" width="200"/>]()
+[<img src="docs/images/img_04.png" width="200"/>]()
+[<img src="docs/images/img_05.png" width="200"/>]()
+[<img src="docs/images/img_06.png" width="200"/>]()
+[<img src="docs/images/img_07.png" width="200"/>]()
+[<img src="docs/images/img_08.png" width="200"/>]()
+[<img src="docs/images/img_09.png" width="200"/>]()
+[<img src="docs/images/img_10.png" width="200"/>]()
+[<img src="docs/images/img_11.png" width="200"/>]()
+[<img src="docs/images/img_12.png" width="200"/>]()
+[<img src="docs/images/img_13.png" width="200"/>]()
+[<img src="docs/images/img_14.png" width="200"/>]()
+[<img src="docs/images/img_15.png" width="200"/>]()
+
+Пример использования:
+
+[<img src="docs/images/img_17.png" width="400"/>]()
+[<img src="docs/images/img_18.png" width="200"/>]()
